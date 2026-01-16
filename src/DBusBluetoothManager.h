@@ -17,7 +17,7 @@ public:
                  sdbus::ServiceName destination,
                  sdbus::ObjectPath path): 
         ProxyInterfaces(connection, destination, std::move(path)),
-                connection(connection), destination(destination) {
+                mConnection(connection), mDestination(destination) {
         registerProxy();
         handleExistingObjects();
     }
@@ -28,11 +28,12 @@ public:
 
     void handleExistingObjects();
     std::vector<std::shared_ptr<IBluetoothDevice>> getDevices() const override;
+    std::optional<std::shared_ptr<IBluetoothDevice>> findDevice(std::string deviceName) const override;
 
 private:
-    std::vector<std::shared_ptr<DBusBluetoothDevice>> devices;
-    sdbus::IConnection& connection;
-    sdbus::ServiceName destination;
+    std::vector<std::shared_ptr<DBusBluetoothDevice>> mDevices;
+    sdbus::IConnection& mConnection;
+    sdbus::ServiceName mDestination;
 
     void onInterfacesAdded(const sdbus::ObjectPath& objectPath,
                            const std::map<sdbus::InterfaceName, 
@@ -44,6 +45,8 @@ private:
                              const std::vector<sdbus::InterfaceName>& interfaces) override;
 
     static std::string extractDeviceAddressFromObjectPath(const sdbus::ObjectPath& objectPath);
+
+    std::optional<std::shared_ptr<DBusBluetoothDevice>> findDBusDevice(std::string deviceValue, std::string property = "name") const;
 };
 
 #endif

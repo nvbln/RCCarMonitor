@@ -9,6 +9,7 @@ set(SRCS
     ${PROJECT_SOURCE_DIR}/src/main.cpp
     ${PROJECT_SOURCE_DIR}/src/DBusBluetoothManager.cpp
     ${PROJECT_SOURCE_DIR}/src/DBusBluetoothDevice.cpp
+    ${PROJECT_SOURCE_DIR}/src/DBusGattCharacteristic.cpp
 )
 
 # Enable building the code generator in the sdbuscpp dependency
@@ -24,6 +25,7 @@ file(MAKE_DIRECTORY ${GENERATED_DIR})
 set(DBUS_XML_FILES
     ${PROJECT_SOURCE_DIR}/dbus/ObjectManager.xml
     ${PROJECT_SOURCE_DIR}/dbus/Device1.xml
+    ${PROJECT_SOURCE_DIR}/dbus/GattCharacteristic1.xml
 )
 
 set(GENERATED_HEADERS "")
