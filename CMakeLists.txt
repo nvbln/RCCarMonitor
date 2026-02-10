@@ -4,6 +4,9 @@ project(RCCarMonitor VERSION 0.1
                      DESCRIPTION "Monitoring program for RC Car"
                      LANGUAGES CXX)
 
+# Allows LSPs to read out compilation settings
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Define all source files
 set(SRCS
     ${PROJECT_SOURCE_DIR}/src/main.cpp
