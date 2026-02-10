@@ -1,5 +1,4 @@
-#ifndef DBUSBLUETOOTHDEVICE_H
-#define DBUSBLUETOOTHDEVICE_H
+#pragma once
 
 #include <sdbus-c++/sdbus-c++.h>
 
@@ -60,5 +59,3 @@ private:
     sdbus::ServiceName mDestination;
     std::vector<std::shared_ptr<DBusGattCharacteristic>> mCharacteristics;
 };
-
-#endif

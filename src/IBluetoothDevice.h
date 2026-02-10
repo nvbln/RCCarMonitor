@@ -1,5 +1,4 @@
-#ifndef IBLUETOOTHDEVICE_H
-#define IBLUETOOTHDEVICE_H
+#pragma once
 
 #include <optional>
 #include "IGattCharacteristic.h"
@@ -58,5 +57,3 @@ public:
 
     // TODO: Add UUID
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef DBUSBLUETOOTHMANAGER_H 
-#define DBUSBLUETOOTHMANAGER_H
+#pragma once
 
 #include <vector>
 
@@ -73,5 +72,3 @@ private:
 
     std::optional<std::shared_ptr<DBusBluetoothDevice>> findDBusDevice(std::string deviceValue, std::string property = "name") const;
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef IGATTCHARACTERISTIC_H 
-#define IGATTCHARACTERISTIC_H 
+#pragma once
 
 /**
  * @class IGattCharacteristic
@@ -35,5 +34,3 @@ public:
      */
     virtual void write(const std::vector<uint8_t>& value) = 0;
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef DBUSGATTCHARACTERISTIC_H
-#define DBUSGATTCHARACTERISTIC_H
+#pragma once
 
 #include "IGattCharacteristic.h"
 #include "GattCharacteristic1.generated.h"
@@ -61,5 +60,3 @@ private:
     sdbus::ServiceName mDestination;
     sdbus::ObjectPath mObjectPath;
 };
-
-#endif
