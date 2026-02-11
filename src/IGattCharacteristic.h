@@ -1,5 +1,9 @@
 #pragma once
 
+#include <string>
+#include <vector>
+#include <cstdint>
+
 /**
  * @class IGattCharacteristic
  * @brief Representation of the GATT Characteristic in Bluetooth BLE.

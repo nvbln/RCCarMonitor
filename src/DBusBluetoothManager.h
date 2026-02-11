@@ -1,13 +1,13 @@
 #pragma once
 
+#include <memory>
 #include <vector>
+#include <string>
 
-#include <sdbus-c++/sdbus-c++.h>
-
-#include "ObjectManager.generated.h"
 #include "IBluetoothManager.h"
 #include "DBusBluetoothDevice.h"
 #include "IBluetoothDevice.h"
+#include "IDBusObjectManagerProxy.h"
 
 /**
  * @class DBusBluetoothManager
@@ -19,28 +19,14 @@
  * the Object Manager is used in the DBus, while at the same time
  * adhering the to the generic Bluetooth interface of the application.
  */
-class DBusBluetoothManager final : public IBluetoothManager,
-                                   public sdbus::ProxyInterfaces<sdbus::ObjectManager_proxy> {
+class DBusBluetoothManager final : public IBluetoothManager {
 public:
     /**
      * @brief creates an instance representing the DBus implementation of the Bluetooth
      *
-     * @param connection The Connection to the DBus.
-     * @param destination The bus name of the service to communicate with.
-     * @param path The path to the root of the DBus Bluetooth component.
+     * @param proxy The proxy through which the manager communicates with SDBus.
      */
-    DBusBluetoothManager(sdbus::IConnection& connection,
-                 sdbus::ServiceName destination,
-                 sdbus::ObjectPath path): 
-        ProxyInterfaces(connection, destination, std::move(path)),
-                mConnection(connection), mDestination(destination) {
-        registerProxy();
-        handleExistingObjects();
-    }
-
-    ~DBusBluetoothManager() {
-        unregisterProxy();
-    }
+    DBusBluetoothManager(std::shared_ptr<IDBusObjectManagerProxy> proxy);
 
     /**
      * @see IBluetoothManager::getDevices()
@@ -53,9 +39,8 @@ public:
     std::optional<std::shared_ptr<IBluetoothDevice>> findDevice(std::string deviceName) const override;
 
 private:
+    std::shared_ptr<IDBusObjectManagerProxy> mProxy;
     std::vector<std::shared_ptr<DBusBluetoothDevice>> mDevices;
-    sdbus::IConnection& mConnection;
-    sdbus::ServiceName mDestination;
 
     void handleExistingObjects();
 
@@ -63,10 +48,10 @@ private:
                            const std::map<sdbus::InterfaceName, 
                                           std::map<sdbus::PropertyName,
                                                    sdbus::Variant>>&
-                                 interfacesAndProperties) override;
+                                 interfacesAndProperties);
 
     void onInterfacesRemoved(const sdbus::ObjectPath& objectPath,
-                             const std::vector<sdbus::InterfaceName>& interfaces) override;
+                             const std::vector<sdbus::InterfaceName>& interfaces);
 
     static std::string extractDeviceAddressFromObjectPath(const sdbus::ObjectPath& objectPath);
 

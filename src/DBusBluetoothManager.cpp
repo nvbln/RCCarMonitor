@@ -2,11 +2,27 @@
 #include <iostream>
 #include <optional>
 
-#include "ObjectManager.generated.h"
 #include "DBusBluetoothManager.h"
 
+DBusBluetoothManager::DBusBluetoothManager(std::shared_ptr<IDBusObjectManagerProxy> proxy): 
+            mProxy(proxy) {
+    proxy->addOnInterfacesAddedCallback([this](const sdbus::ObjectPath& objectPath,
+                       const std::map<sdbus::InterfaceName, 
+                                      std::map<sdbus::PropertyName,
+                                               sdbus::Variant>>&
+                             interfacesAndProperties) {
+        this->onInterfacesAdded(objectPath, interfacesAndProperties);
+    });
+
+    proxy->addOnInterfacesRemovedCallback([this](const sdbus::ObjectPath& objectPath, const std::vector<sdbus::InterfaceName>& interfaces) {
+        this->onInterfacesRemoved(objectPath, interfaces);
+    });
+
+    handleExistingObjects();
+}
+
 void DBusBluetoothManager::handleExistingObjects() {
-    auto objectsInterfacesAndProperties = GetManagedObjects();
+    auto objectsInterfacesAndProperties = mProxy->managedObjects();
     for (const auto& [object, interfacesAndProperties] : objectsInterfacesAndProperties) {
         onInterfacesAdded(object, interfacesAndProperties);
     }
@@ -21,9 +37,7 @@ void DBusBluetoothManager::onInterfacesAdded(const sdbus::ObjectPath& objectPath
     for (const auto& [interface, properties] : interfacesAndProperties) {
         if (interface == "org.bluez.Device1") {
             mDevices.push_back(std::make_shared<DBusBluetoothDevice>(
-                this->mConnection,
-                this->mDestination,
-                objectPath
+                mProxy->createDevice(objectPath)
             ));
         } else if (interface == "org.bluez.GattCharacteristic1") {
             std::cout << "Added characteristic: " << objectPath << std::endl;
@@ -33,9 +47,7 @@ void DBusBluetoothManager::onInterfacesAdded(const sdbus::ObjectPath& objectPath
             if (optDevice) {
                 auto device = *optDevice;
                 device->addCharacteristic(std::make_shared<DBusGattCharacteristic>(
-                    this->mConnection,
-                    this->mDestination,
-                    objectPath
+                    mProxy->createCharacteristic(objectPath)
                 ));
             } else {
                 std::cout << "Couldn't find device: " << address << std::endl;

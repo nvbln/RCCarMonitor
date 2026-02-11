@@ -1,9 +1,6 @@
 #include <sdbus-c++/sdbus-c++.h>
-#include <iostream>
 #include <cctype>
 
-#include "IBluetoothDevice.h"
-#include "Device1.generated.h"
 #include "DBusBluetoothDevice.h"
 
 void DBusBluetoothDevice::addCharacteristic(std::shared_ptr<DBusGattCharacteristic> characteristic) {
@@ -15,26 +12,6 @@ void DBusBluetoothDevice::removeCharacteristic(std::shared_ptr<DBusGattCharacter
         std::remove(mCharacteristics.begin(), mCharacteristics.end(), characteristic),
         mCharacteristics.end()
     );
-}
-
-void DBusBluetoothDevice::connect() {
-    Connect();
-}
-
-void DBusBluetoothDevice::disconnect() {
-    Disconnect();
-}
-
-bool DBusBluetoothDevice::isConnected() {
-    return Connected();
-}
-
-std::string DBusBluetoothDevice::name() {
-    return Alias();
-}
-
-std::string DBusBluetoothDevice::address() {
-    return Address();
 }
 
 std::optional<std::shared_ptr<IGattCharacteristic>> DBusBluetoothDevice::findCharacteristic(std::string uuid) {

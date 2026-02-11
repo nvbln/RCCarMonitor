@@ -1,8 +1,8 @@
 #include <iostream>
 #include <sdbus-c++/sdbus-c++.h>
 
+#include "DBusObjectManagerProxy.h"
 #include "DBusBluetoothManager.h"
-#include "DBusBluetoothDevice.h"
 
 #include <chrono>
 #include <thread>
@@ -16,10 +16,10 @@ int main() {
     // TODO: Error handling
     std::unique_ptr<IBluetoothManager> bluetoothManager;
     try {
-    bluetoothManager = std::make_unique<DBusBluetoothManager>(*connection,
+        auto proxy = std::make_shared<DBusObjectManagerProxy>(*connection,
                                                               destination,
                                                               std::move(objectPath));
-
+        bluetoothManager = std::make_unique<DBusBluetoothManager>(proxy);
     } catch (const sdbus::Error& e) {
         std::cerr << "Call failed: " << e.getName() << " - " << e.getMessage() << std::endl;
         return 1;

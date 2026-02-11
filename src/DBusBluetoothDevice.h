@@ -5,9 +5,9 @@
 #include <optional>
 
 #include "DBusGattCharacteristic.h"
-#include "Device1.generated.h"
 #include "IGattCharacteristic.h"
 #include "IBluetoothDevice.h"
+#include "IDBusDeviceProxy.h"
 
 /**
  * @class DBusBluetoothDevice
@@ -17,45 +17,70 @@
  * and the Bluetooth device as defined by the DBus XML object.
  * Interacts with the Bluetooth device through the DBus API.
  */
-class DBusBluetoothDevice final : public IBluetoothDevice,
-                                  public sdbus::ProxyInterfaces<org::bluez::Device1_proxy> {
+class DBusBluetoothDevice final : public IBluetoothDevice {
 public:
     /**
      * @brief creates an instance representing the DBus Bluetooth device.
      *
-     * @param connection The Connection to the DBus.
-     * @param destination The bus name of the service to communicate with.
-     * @param path The path to the device that this instance should represent.
+     * @param proxy the proxy through which the device communicates with SDBus.
      */
-    DBusBluetoothDevice(sdbus::IConnection& connection,
-                        sdbus::ServiceName destination,
-                        sdbus::ObjectPath path): 
-        ProxyInterfaces(connection, destination, std::move(path)),
-                mConnection(connection), mDestination(destination) {
-        registerProxy();
-    }
-
-    ~DBusBluetoothDevice() {
-        unregisterProxy();
-    }
+    DBusBluetoothDevice(std::shared_ptr<IDBusDeviceProxy> proxy): 
+                mProxy(proxy) {}
 
     /**
      * @brief adds a DBus GATT Characteristic to the device.
      * @param characteristic The characteristic to add to the device.
      */
     void addCharacteristic(std::shared_ptr<DBusGattCharacteristic> characteristic);
+
+    /**
+     * @brief removes the DBus GATT Characteristic from the device.
+     * @param characteristic The characteristic to remove from the device.
+     */
     void removeCharacteristic(std::shared_ptr<DBusGattCharacteristic> characteristic);
     std::optional<std::shared_ptr<DBusGattCharacteristic>> findDBusCharacteristic(std::string value, std::string property = "uuid");
 
-    void connect() override;
-    void disconnect() override;
-    bool isConnected() override;
-    std::string name() override;
-    std::string address() override;
+    /**
+     * @see IBluetoothDevice::connect()
+     */
+    void connect() override {
+        mProxy->connect();
+    }
+
+    /**
+     * @see IBluetoothDevice::disconnect()
+     */
+    void disconnect() override {
+        mProxy->disconnect();
+    }
+
+    /**
+     * @see IBluetoothDevice::isConnected()
+     */
+    bool isConnected() override {
+        return mProxy->isConnected();
+    }
+
+    /**
+     * @see IBluetoothDevice::name()
+     */
+    std::string name() override {
+        return mProxy->name();
+    }
+
+    /**
+     * @see IBluetoothDevice::address()
+     */
+    std::string address() override {
+        return mProxy->address();
+    }
+
+    /**
+     * @see IBluetoothDevice::findCharacteristic()
+     */
     std::optional<std::shared_ptr<IGattCharacteristic>> findCharacteristic(std::string uuid) override;
 
 private:
-    sdbus::IConnection& mConnection;
-    sdbus::ServiceName mDestination;
+    std::shared_ptr<IDBusDeviceProxy> mProxy;
     std::vector<std::shared_ptr<DBusGattCharacteristic>> mCharacteristics;
 };
