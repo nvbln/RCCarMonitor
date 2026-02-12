@@ -56,7 +56,6 @@ add_custom_target(generate_dbus_headers ALL DEPENDS ${GENERATED_HEADERS})
 set(SRCS
     ${PROJECT_SOURCE_DIR}/src/DBusBluetoothManager.cpp
     ${PROJECT_SOURCE_DIR}/src/DBusBluetoothDevice.cpp
-#    ${PROJECT_SOURCE_DIR}/src/DBusGattCharacteristic.cpp
 )
 
 add_library(application ${SRCS})
@@ -72,7 +71,8 @@ target_link_libraries(monitor PRIVATE application SDBusCpp::sdbus-c++)
 enable_testing()
 
 add_executable(monitor_test
-    test/DBusGattCharacteristicTest.cpp
+    test/DBusBluetoothDeviceTest.cpp
+    test/DBusBluetoothManagerTest.cpp
 )
 
 target_link_libraries(monitor_test 

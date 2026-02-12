@@ -9,6 +9,8 @@
 #include "IBluetoothDevice.h"
 #include "IDBusObjectManagerProxy.h"
 
+using InterfacesAndPropertiesMap = IDBusObjectManagerProxy::InterfacesAndPropertiesMap;
+
 /**
  * @class DBusBluetoothManager
  * @brief The DBus implementation of the generic Bluetooth interface
@@ -45,9 +47,7 @@ private:
     void handleExistingObjects();
 
     void onInterfacesAdded(const sdbus::ObjectPath& objectPath,
-                           const std::map<sdbus::InterfaceName, 
-                                          std::map<sdbus::PropertyName,
-                                                   sdbus::Variant>>&
+                           const InterfacesAndPropertiesMap&
                                  interfacesAndProperties);
 
     void onInterfacesRemoved(const sdbus::ObjectPath& objectPath,
@@ -56,4 +56,6 @@ private:
     static std::string extractDeviceAddressFromObjectPath(const sdbus::ObjectPath& objectPath);
 
     std::optional<std::shared_ptr<DBusBluetoothDevice>> findDBusDevice(std::string deviceValue, std::string property = "name") const;
+
+    void removeDevice(std::shared_ptr<DBusBluetoothDevice> device);
 };

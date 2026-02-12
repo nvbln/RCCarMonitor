@@ -1,15 +1,16 @@
+#include "DBusBluetoothManager.h"
+#include "IDBusObjectManagerProxy.h"
+
 #include <sdbus-c++/sdbus-c++.h>
 #include <iostream>
 #include <optional>
 
-#include "DBusBluetoothManager.h"
+using InterfacesAndPropertiesMap = IDBusObjectManagerProxy::InterfacesAndPropertiesMap;
 
 DBusBluetoothManager::DBusBluetoothManager(std::shared_ptr<IDBusObjectManagerProxy> proxy): 
             mProxy(proxy) {
     proxy->addOnInterfacesAddedCallback([this](const sdbus::ObjectPath& objectPath,
-                       const std::map<sdbus::InterfaceName, 
-                                      std::map<sdbus::PropertyName,
-                                               sdbus::Variant>>&
+                       const InterfacesAndPropertiesMap&
                              interfacesAndProperties) {
         this->onInterfacesAdded(objectPath, interfacesAndProperties);
     });
@@ -22,17 +23,14 @@ DBusBluetoothManager::DBusBluetoothManager(std::shared_ptr<IDBusObjectManagerPro
 }
 
 void DBusBluetoothManager::handleExistingObjects() {
-    auto objectsInterfacesAndProperties = mProxy->managedObjects();
-    for (const auto& [object, interfacesAndProperties] : objectsInterfacesAndProperties) {
-        onInterfacesAdded(object, interfacesAndProperties);
+    auto managedObjects = mProxy->managedObjects();
+    for (const auto& [objectPath, interfacesAndPropertiesMap] : managedObjects) {
+        onInterfacesAdded(objectPath, interfacesAndPropertiesMap);
     }
 }
 
 void DBusBluetoothManager::onInterfacesAdded(const sdbus::ObjectPath& objectPath,
-                       const std::map<sdbus::InterfaceName, 
-                                      std::map<sdbus::PropertyName,
-                                               sdbus::Variant>>&
-                             interfacesAndProperties) {
+                       const InterfacesAndPropertiesMap& interfacesAndProperties) {
     // Filter on Bluetooth devices.
     for (const auto& [interface, properties] : interfacesAndProperties) {
         if (interface == "org.bluez.Device1") {
@@ -70,8 +68,10 @@ void DBusBluetoothManager::onInterfacesRemoved(const sdbus::ObjectPath& objectPa
         std::string address = this->extractDeviceAddressFromObjectPath(objectPath);
         auto devicePtr = findDBusDevice(address, "address");
 
+
         if (interface == "org.bluez.Device1") {
             if (devicePtr) {
+                removeDevice(devicePtr.value());
                 std::cout << "Device " << (*devicePtr)->name() << " removed." << std::endl;
             }
         } else if (interface == "org.bluez.GattCharacteristic1") {
@@ -147,4 +147,11 @@ std::optional<std::shared_ptr<DBusBluetoothDevice>> DBusBluetoothManager::findDB
     }
 
     return *iterator;
+}
+
+void DBusBluetoothManager::removeDevice(std::shared_ptr<DBusBluetoothDevice> device) {
+    mDevices.erase(
+        std::remove(mDevices.begin(), mDevices.end(), device),
+        mDevices.end()
+    );
 }

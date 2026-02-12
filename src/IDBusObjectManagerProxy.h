@@ -14,6 +14,7 @@
  */
 class IDBusObjectManagerProxy {
 public:
+    using InterfacesAndPropertiesMap = std::map<sdbus::InterfaceName, std::map<sdbus::PropertyName, sdbus::Variant>>;
     /**
      * A callback such that the application DBus implementation is updated on
      * new interfaces, without having to inherit from the SDBus library.
@@ -22,11 +23,7 @@ public:
      */
     using OnInterfacesAddedCallback = std::function<void(
             const sdbus::ObjectPath& objectPath,
-            const std::map<sdbus::InterfaceName, 
-                           std::map<sdbus::PropertyName,
-                                    sdbus::Variant
-                                   >
-                          >& interfacesAndProperties)>;
+            const InterfacesAndPropertiesMap& interfacesAndProperties)>;
 
     /**
      * A callback such that the application DBus implementation is updated on
@@ -43,14 +40,14 @@ public:
      *
      * @param callback The function to notify of the new interface.
      */
-    virtual void addOnInterfacesAddedCallback(OnInterfacesAddedCallback callback) = 0;
+    virtual void addOnInterfacesAddedCallback(const OnInterfacesAddedCallback callback) = 0;
 
     /**
      * @brief subscribes the callback to updates on removed interfaces.
      *
      * @param callback The function to notify of the removed interface.
      */
-    virtual void addOnInterfacesRemovedCallback(OnInterfacesRemovedCallback callback) = 0;
+    virtual void addOnInterfacesRemovedCallback(const OnInterfacesRemovedCallback callback) = 0;
 
     /**
      * @brief creates a new instance of IDBusDeviceProxy with the given path.
@@ -75,9 +72,5 @@ public:
      *
      * @return a map of objects that the ObjectManager holds.
      */
-    virtual std::map<sdbus::ObjectPath,
-                     std::map<sdbus::InterfaceName,
-                              std::map<sdbus::PropertyName, sdbus::Variant>
-                             >
-                     > managedObjects() = 0;
+    virtual std::map<sdbus::ObjectPath, InterfacesAndPropertiesMap> managedObjects() = 0;
 };

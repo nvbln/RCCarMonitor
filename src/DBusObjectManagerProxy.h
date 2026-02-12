@@ -11,6 +11,8 @@
 #include "DBusDeviceProxy.h"
 #include "DBusCharacteristicProxy.h"
 
+using InterfacesAndPropertiesMap = IDBusObjectManagerProxy::InterfacesAndPropertiesMap;
+
 /**
  * @class DBusObjectManagerProxy
  * @brief wrapper implementation of the Object Manager proxy.
@@ -72,7 +74,7 @@ public:
     /**
      * @see IDBusObjectManagerProxy::managedObjects()
      */
-    std::map<sdbus::ObjectPath, std::map<sdbus::InterfaceName, std::map<sdbus::PropertyName, sdbus::Variant>>> managedObjects() override {
+    std::map<sdbus::ObjectPath, InterfacesAndPropertiesMap> managedObjects() override {
         return GetManagedObjects();
     }
 
@@ -84,9 +86,7 @@ private:
     std::vector<OnInterfacesRemovedCallback> mOnRemovedCallbacks;
 
     void onInterfacesAdded(const sdbus::ObjectPath& objectPath,
-                           const std::map<sdbus::InterfaceName, 
-                                          std::map<sdbus::PropertyName,
-                                                   sdbus::Variant>>&
+                           const InterfacesAndPropertiesMap&
                                  interfacesAndProperties) override {
         for (auto callback : mOnAddedCallbacks) {
             callback(objectPath, interfacesAndProperties);     

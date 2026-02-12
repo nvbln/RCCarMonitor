@@ -29,15 +29,24 @@ public:
 
     /**
      * @brief adds a DBus GATT Characteristic to the device.
+     *
      * @param characteristic The characteristic to add to the device.
      */
     void addCharacteristic(std::shared_ptr<DBusGattCharacteristic> characteristic);
 
     /**
      * @brief removes the DBus GATT Characteristic from the device.
+     *
      * @param characteristic The characteristic to remove from the device.
      */
     void removeCharacteristic(std::shared_ptr<DBusGattCharacteristic> characteristic);
+
+    /**
+     * @brief retrieves the first DBusCharacteristic with the given property, if any
+     *
+     * @param value The value that the sought after Characteristic has.
+     * @param property The property of the value, uuid by default.
+     */
     std::optional<std::shared_ptr<DBusGattCharacteristic>> findDBusCharacteristic(std::string value, std::string property = "uuid");
 
     /**
