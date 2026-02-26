@@ -1,12 +1,12 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
-#include "IBluetoothManager.h"
 #include "DBusBluetoothDevice.h"
 #include "IBluetoothDevice.h"
+#include "IBluetoothManager.h"
 #include "IDBusObjectManagerProxy.h"
 
 using InterfacesAndPropertiesMap = IDBusObjectManagerProxy::InterfacesAndPropertiesMap;
@@ -23,39 +23,40 @@ using InterfacesAndPropertiesMap = IDBusObjectManagerProxy::InterfacesAndPropert
  */
 class DBusBluetoothManager final : public IBluetoothManager {
 public:
-    /**
-     * @brief creates an instance representing the DBus implementation of the Bluetooth
-     *
-     * @param proxy The proxy through which the manager communicates with SDBus.
-     */
-    DBusBluetoothManager(std::shared_ptr<IDBusObjectManagerProxy> proxy);
+  /**
+   * @brief creates an instance representing the DBus implementation of the Bluetooth
+   *
+   * @param proxy The proxy through which the manager communicates with SDBus.
+   */
+  DBusBluetoothManager(std::shared_ptr<IDBusObjectManagerProxy> proxy);
 
-    /**
-     * @see IBluetoothManager::getDevices()
-     */
-    std::vector<std::shared_ptr<IBluetoothDevice>> getDevices() const override;
+  /**
+   * @see IBluetoothManager::getDevices()
+   */
+  std::vector<std::shared_ptr<IBluetoothDevice>> getDevices() const override;
 
-    /**
-     * @see IBluetoothManager::findDevice()
-     */
-    std::optional<std::shared_ptr<IBluetoothDevice>> findDevice(std::string deviceName) const override;
+  /**
+   * @see IBluetoothManager::findDevice()
+   */
+  std::optional<std::shared_ptr<IBluetoothDevice>>
+  findDevice(std::string deviceName) const override;
 
 private:
-    std::shared_ptr<IDBusObjectManagerProxy> mProxy;
-    std::vector<std::shared_ptr<DBusBluetoothDevice>> mDevices;
+  std::shared_ptr<IDBusObjectManagerProxy> mProxy;
+  std::vector<std::shared_ptr<DBusBluetoothDevice>> mDevices;
 
-    void handleExistingObjects();
+  void handleExistingObjects();
 
-    void onInterfacesAdded(const sdbus::ObjectPath& objectPath,
-                           const InterfacesAndPropertiesMap&
-                                 interfacesAndProperties);
+  void onInterfacesAdded(const sdbus::ObjectPath &objectPath,
+                         const InterfacesAndPropertiesMap &interfacesAndProperties);
 
-    void onInterfacesRemoved(const sdbus::ObjectPath& objectPath,
-                             const std::vector<sdbus::InterfaceName>& interfaces);
+  void onInterfacesRemoved(const sdbus::ObjectPath &objectPath,
+                           const std::vector<sdbus::InterfaceName> &interfaces);
 
-    static std::string extractDeviceAddressFromObjectPath(const sdbus::ObjectPath& objectPath);
+  static std::string extractDeviceAddressFromObjectPath(const sdbus::ObjectPath &objectPath);
 
-    std::optional<std::shared_ptr<DBusBluetoothDevice>> findDBusDevice(std::string deviceValue, std::string property = "name") const;
+  std::optional<std::shared_ptr<DBusBluetoothDevice>>
+  findDBusDevice(std::string deviceValue, std::string property = "name") const;
 
-    void removeDevice(std::shared_ptr<DBusBluetoothDevice> device);
+  void removeDevice(std::shared_ptr<DBusBluetoothDevice> device);
 };

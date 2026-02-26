@@ -1,8 +1,8 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <vector>
-#include <cstdint>
 
 /**
  * @class IDBusCharacteristicProxy
@@ -14,32 +14,31 @@
  */
 class IDBusCharacteristicProxy {
 public:
+  /**
+   * @brief the path to the characteristic.
+   *
+   * @return the path as a string.
+   */
+  virtual std::string objectPath() = 0;
 
-    /**
-     * @brief the path to the characteristic.
-     *
-     * @return the path as a string.
-     */
-    virtual std::string objectPath() = 0;
+  /**
+   * @brief the unique UUID of the characteristic.
+   *
+   * @return the UUID as a string.
+   */
+  virtual std::string uuid() = 0;
 
-    /**
-     * @brief the unique UUID of the characteristic.
-     *
-     * @return the UUID as a string.
-     */
-    virtual std::string uuid() = 0;
+  /**
+   * @brief retrieves the current value of the characteristic.
+   *
+   * @return a byte vector with the value of the characteristic.
+   */
+  virtual std::vector<uint8_t> read() = 0;
 
-    /**
-     * @brief retrieves the current value of the characteristic.
-     *
-     * @return a byte vector with the value of the characteristic.
-     */
-    virtual std::vector<uint8_t> read() = 0;
-
-    /**
-     * @brief sets the given value as the characteristic value.
-     *
-     * @param the byte vector to write to the characteristic.
-     */
-    virtual void write(const std::vector<uint8_t>& value) = 0;
+  /**
+   * @brief sets the given value as the characteristic value.
+   *
+   * @param the byte vector to write to the characteristic.
+   */
+  virtual void write(const std::vector<uint8_t> &value) = 0;
 };

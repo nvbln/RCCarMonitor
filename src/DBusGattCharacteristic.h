@@ -16,44 +16,35 @@
  */
 class DBusGattCharacteristic : public IGattCharacteristic {
 public:
-    /**
-     * @brief creates an instance representing the DBus GATT Characteristic.
-     *
-     * @param proxy the proxy through which the characteristic communicates with SDBus.
-     */
-    DBusGattCharacteristic(std::shared_ptr<IDBusCharacteristicProxy> proxy): 
-                mProxy(proxy) {}
+  /**
+   * @brief creates an instance representing the DBus GATT Characteristic.
+   *
+   * @param proxy the proxy through which the characteristic communicates with SDBus.
+   */
+  DBusGattCharacteristic(std::shared_ptr<IDBusCharacteristicProxy> proxy) : mProxy(proxy) {}
 
-    /**
-     * @brief returns the complete path to the Characteristic.
-     *
-     * @return the DBus path to (and including) the Characteristic.
-     */
-    std::string objectPath() {
-        return mProxy->objectPath();
-    }
+  /**
+   * @brief returns the complete path to the Characteristic.
+   *
+   * @return the DBus path to (and including) the Characteristic.
+   */
+  std::string objectPath() { return mProxy->objectPath(); }
 
-    /**
-     * @see IGattCharacteristic::uuid()
-     */
-    std::string uuid() override {
-        return mProxy->uuid();
-    }
+  /**
+   * @see IGattCharacteristic::uuid()
+   */
+  std::string uuid() override { return mProxy->uuid(); }
 
-    /**
-     * @see IGattCharacteristic::read()
-     */
-    std::vector<uint8_t> read() override {
-        return mProxy->read();
-    }
+  /**
+   * @see IGattCharacteristic::read()
+   */
+  std::vector<uint8_t> read() override { return mProxy->read(); }
 
-    /**
-     * @see IGattCharacteristic::write()
-     */
-    void write(const std::vector<uint8_t>& value) override {
-        return mProxy->write(value);
-    }
+  /**
+   * @see IGattCharacteristic::write()
+   */
+  void write(const std::vector<uint8_t> &value) override { return mProxy->write(value); }
 
 private:
-    std::shared_ptr<IDBusCharacteristicProxy> mProxy;
+  std::shared_ptr<IDBusCharacteristicProxy> mProxy;
 };
