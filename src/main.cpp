@@ -7,6 +7,11 @@
 #include <chrono>
 #include <thread>
 
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+#include "imgui.h"
+#include <GLFW/glfw3.h>
+
 int main() {
   // Create a proxy for the BlueZ ObjectManager.
   auto connection = sdbus::createSystemBusConnection();
@@ -26,54 +31,111 @@ int main() {
 
   std::vector<std::shared_ptr<IBluetoothDevice>> devices = bluetoothManager->getDevices();
 
-  // Get the device
-  std::string deviceName;
-  std::cout << "Pick your device: ";
-  std::cin >> deviceName;
+  // Set up the GUI
+  glfwInit();
+  GLFWwindow *window = glfwCreateWindow(500, 400, "MyApp", nullptr, nullptr);
+  glfwMakeContextCurrent(window);
 
-  std::optional<std::shared_ptr<IBluetoothDevice>> optDevice =
-      bluetoothManager->findDevice(deviceName);
-  std::shared_ptr<IBluetoothDevice> device;
-  if (optDevice) {
-    device = *optDevice;
-  } else {
-    std::cout << "Couldn't find the device." << std::endl;
-    return 1;
-  }
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
 
-  // Connect to the device
-  device->connect();
-  std::cout << "Connected to device? " << device->isConnected() << std::endl;
+  // Disable the imgui.ini
+  ImGui::GetIO().IniFilename = nullptr;
 
-  // Read the characteristic.
-  auto characteristicPtr = device->findCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1214");
-  if (characteristicPtr) {
-    auto characteristic = *characteristicPtr;
+  ImGui_ImplGlfw_InitForOpenGL(window, true);
+  ImGui_ImplOpenGL3_Init();
 
-    std::vector<uint8_t> bytesTrue = {0x01};
-    std::vector<uint8_t> bytesFalse = {0x00};
-    std::vector<uint8_t> currentValue = characteristic->read();
+  int deviceIdx = -1;
+  std::shared_ptr<IBluetoothDevice> device = nullptr;
+  std::shared_ptr<IGattCharacteristic> characteristic = nullptr;
+  std::vector<uint8_t> bytesTrue = {0x01};
+  std::vector<uint8_t> bytesFalse = {0x00};
+  bool readCurrentValue = false;
+  bool turnedLedOn = false;
+  bool turnedLedOff = false;
+  while (!glfwWindowShouldClose(window)) {
+    glfwPollEvents();
 
-    if (currentValue != bytesTrue) {
-      std::cout << "LED is off" << std::endl;
-    } else {
-      std::cout << "LED is on" << std::endl;
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+
+    // ImGui::ShowDemoWindow();
+    if (device == nullptr) { // Pick a bluetooth device.
+      ImGui::Begin("Bluetooth devices:");
+      for (int i = 0; i < devices.size(); i++) {
+        if (ImGui::Selectable(devices[i]->name().c_str(), deviceIdx == i)) {
+          device = devices[i];
+          device->connect();
+
+          std::cout << "Connected to device? " << device->isConnected() << std::endl;
+          auto characteristicPtr =
+              device->findCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1214");
+          if (characteristicPtr) {
+            characteristic = *characteristicPtr;
+          }
+        }
+      }
+      ImGui::End();
+    } else if (characteristic == nullptr) {
+      ImGui::Begin("Status");
+      ImGui::TextWrapped("Characteristic could not be found");
+      ImGui::End();
+    } else if (characteristic && !readCurrentValue) {
+      std::vector<uint8_t> currentValue = characteristic->read();
+
+      readCurrentValue = true;
+
+      ImGui::Begin("Status");
+      if (currentValue != bytesTrue) {
+        ImGui::TextWrapped("LED is off");
+      } else {
+        ImGui::TextWrapped("Led is on");
+      }
+      ImGui::End();
+    } else if (characteristic && readCurrentValue && !turnedLedOn) {
+      characteristic->write(bytesTrue);
+      turnedLedOn = true;
+
+      ImGui::Begin("Status");
+      ImGui::TextWrapped("Turned LED on");
+      ImGui::End();
+
+    } else if (characteristic && readCurrentValue && turnedLedOn && !turnedLedOff) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+      characteristic->write(bytesFalse);
+      turnedLedOff = true;
+
+      ImGui::Begin("Status");
+      ImGui::TextWrapped("Turned LED off");
+      ImGui::End();
+    } else if (characteristic && readCurrentValue && turnedLedOn && turnedLedOff &&
+               device->isConnected()) {
+      ImGui::Begin("Status");
+      ImGui::TextWrapped("Disconnecting...");
+      ImGui::End();
+      device->disconnect();
+    } else if (characteristic && readCurrentValue && turnedLedOn && turnedLedOff &&
+               !device->isConnected()) {
+      ImGui::Begin("Status");
+      ImGui::TextWrapped("Device disconnected");
+      ImGui::End();
     }
 
-    characteristic->write(bytesTrue);
-    std::cout << "Turned LED on" << std::endl;
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-
-    characteristic->write(bytesFalse);
-    std::cout << "Turned LED off" << std::endl;
-  } else {
-    std::cout << "Didn't find characteristic" << std::endl;
+    ImGui::Render();
+    glClear(GL_COLOR_BUFFER_BIT);
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    glfwSwapBuffers(window);
   }
 
-  std::cout << "Disconnecting..." << std::endl;
-  device->disconnect();
-  std::cout << "Connected to device? " << device->isConnected() << std::endl;
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
+
+  glfwDestroyWindow(window);
+  glfwTerminate();
 
   return 0;
 }

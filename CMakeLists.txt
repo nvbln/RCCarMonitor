@@ -11,6 +11,41 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Add Dear ImGui as library for the GUI
+find_package(OpenGL REQUIRED)
+find_package(glfw3 QUIET)
+# Use pkg-config as fallback for Linux
+if (NOT glfw3_FOUND)
+    find_package(PkgConfig REQUIRED)
+    if (PkgConfig_FOUND)
+        pkg_check_modules(GLFW3 REQUIRED glfw3)
+    endif()
+endif()
+
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/external/imgui)
+set(IMGUI_SOURCES
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_demo.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_DIR}/misc/cpp/imgui_stdlib.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+)
+
+add_library(imgui STATIC ${IMGUI_SOURCES})
+
+target_include_directories(imgui PUBLIC
+    ${IMGUI_DIR}
+    ${IMGUI_DIR}/backends
+)
+
+target_link_libraries(imgui PUBLIC
+    OpenGL::GL
+    glfw
+)
+
 include(FetchContent)
 FetchContent_Declare(
   googletest
@@ -60,7 +95,14 @@ set(SRCS
 
 add_library(application ${SRCS})
 add_dependencies(application generate_dbus_headers)
-target_link_libraries(application PUBLIC SDBusCpp::sdbus-c++)
+target_link_libraries(application
+    PUBLIC
+        SDBusCpp::sdbus-c++
+        imgui
+        OpenGL::GL
+        glfw
+)
+
 target_include_directories(application PUBLIC src ${GENERATED_DIR})
 
 # Create executable for application
@@ -75,7 +117,7 @@ add_executable(monitor_test
     test/DBusBluetoothManagerTest.cpp
 )
 
-target_link_libraries(monitor_test 
+target_link_libraries(monitor_test
     PRIVATE application SDBusCpp::sdbus-c++
     PUBLIC GTest::gtest_main GTest::gmock_main
 )
