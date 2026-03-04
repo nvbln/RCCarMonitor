@@ -91,6 +91,8 @@ add_custom_target(generate_dbus_headers ALL DEPENDS ${GENERATED_HEADERS})
 set(SRCS
     ${PROJECT_SOURCE_DIR}/src/DBusBluetoothManager.cpp
     ${PROJECT_SOURCE_DIR}/src/DBusBluetoothDevice.cpp
+    ${PROJECT_SOURCE_DIR}/src/views/ItemPickerView.cpp
+    ${PROJECT_SOURCE_DIR}/src/controllers/BluetoothDeviceController.cpp
 )
 
 add_library(application ${SRCS})
@@ -115,6 +117,7 @@ enable_testing()
 add_executable(monitor_test
     test/DBusBluetoothDeviceTest.cpp
     test/DBusBluetoothManagerTest.cpp
+    test/BluetoothDeviceControllerTest.cpp
 )
 
 target_link_libraries(monitor_test

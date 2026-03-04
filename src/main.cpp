@@ -4,6 +4,9 @@
 #include "DBusBluetoothManager.h"
 #include "DBusObjectManagerProxy.h"
 
+#include "controllers/BluetoothDeviceController.h"
+#include "views/ItemPickerView.h"
+
 #include <chrono>
 #include <thread>
 
@@ -19,17 +22,15 @@ int main() {
   sdbus::ObjectPath objectPath{"/"};
 
   // TODO: Error handling
-  std::unique_ptr<IBluetoothManager> bluetoothManager;
+  std::shared_ptr<IBluetoothManager> bluetoothManager;
   try {
     auto proxy =
         std::make_shared<DBusObjectManagerProxy>(*connection, destination, std::move(objectPath));
-    bluetoothManager = std::make_unique<DBusBluetoothManager>(proxy);
+    bluetoothManager = std::make_shared<DBusBluetoothManager>(proxy);
   } catch (const sdbus::Error &e) {
     std::cerr << "Call failed: " << e.getName() << " - " << e.getMessage() << std::endl;
     return 1;
   }
-
-  std::vector<std::shared_ptr<IBluetoothDevice>> devices = bluetoothManager->getDevices();
 
   // Set up the GUI
   glfwInit();
@@ -45,9 +46,23 @@ int main() {
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init();
 
-  int deviceIdx = -1;
-  std::shared_ptr<IBluetoothDevice> device = nullptr;
   std::shared_ptr<IGattCharacteristic> characteristic = nullptr;
+  std::shared_ptr<IBluetoothDevice> device = nullptr;
+  std::shared_ptr<ItemPickerView> itemPicker =
+      std::make_shared<ItemPickerView>(std::vector<std::string>());
+  BluetoothDeviceController deviceController =
+      BluetoothDeviceController(bluetoothManager, itemPicker);
+  deviceController.subscribe([&](std::shared_ptr<IBluetoothDevice> pickedDevice) {
+    device = pickedDevice;
+    device->connect();
+
+    std::cout << "Connected to device? " << device->isConnected() << std::endl;
+    auto characteristicPtr = device->findCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1214");
+    if (characteristicPtr) {
+      characteristic = *characteristicPtr;
+    }
+  });
+
   std::vector<uint8_t> bytesTrue = {0x01};
   std::vector<uint8_t> bytesFalse = {0x00};
   bool readCurrentValue = false;
@@ -64,21 +79,8 @@ int main() {
 
     // ImGui::ShowDemoWindow();
     if (device == nullptr) { // Pick a bluetooth device.
-      ImGui::Begin("Bluetooth devices:");
-      for (int i = 0; i < devices.size(); i++) {
-        if (ImGui::Selectable(devices[i]->name().c_str(), deviceIdx == i)) {
-          device = devices[i];
-          device->connect();
-
-          std::cout << "Connected to device? " << device->isConnected() << std::endl;
-          auto characteristicPtr =
-              device->findCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1214");
-          if (characteristicPtr) {
-            characteristic = *characteristicPtr;
-          }
-        }
-      }
-      ImGui::End();
+      deviceController.update();
+      itemPicker->draw();
     } else if (characteristic == nullptr) {
       ImGui::Begin("Status");
       ImGui::TextWrapped("Characteristic could not be found");
