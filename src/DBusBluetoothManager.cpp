@@ -36,7 +36,8 @@ void DBusBluetoothManager::onInterfacesAdded(
     const InterfacesAndPropertiesMap &interfacesAndProperties) {
   // Filter on Bluetooth devices.
   for (const auto &[interface, properties] : interfacesAndProperties) {
-    if (interface == "org.bluez.Device1") {
+    // Filter on devices that are currently available (have a receive signal strength property)
+    if (interface == "org.bluez.Device1" && properties.count(sdbus::MemberName{"RSSI"}) > 0) {
       mDevices.push_back(std::make_shared<DBusBluetoothDevice>(mProxy->createDevice(objectPath)));
     } else if (interface == "org.bluez.GattCharacteristic1") {
       std::cout << "Added characteristic: " << objectPath << std::endl;
