@@ -6,10 +6,10 @@
 
 #include "DBusBluetoothAdapter.h"
 #include "DBusBluetoothDevice.h"
-#include "IDBusObjectManagerProxy.h"
 #include "interfaces/IBluetoothAdapter.h"
 #include "interfaces/IBluetoothDevice.h"
 #include "interfaces/IBluetoothManager.h"
+#include "proxies/IDBusObjectManagerProxy.h"
 
 using InterfacesAndPropertiesMap = IDBusObjectManagerProxy::InterfacesAndPropertiesMap;
 

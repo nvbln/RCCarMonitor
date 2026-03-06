@@ -3,8 +3,8 @@
 #include <memory>
 #include <string>
 
-#include "IDBusCharacteristicProxy.h"
 #include "interfaces/IGattCharacteristic.h"
+#include "proxies/IDBusCharacteristicProxy.h"
 
 /**
  * @class DBusGattCharacteristic

@@ -2,7 +2,7 @@
 #include <sdbus-c++/sdbus-c++.h>
 
 #include "DBusBluetoothManager.h"
-#include "DBusObjectManagerProxy.h"
+#include "proxies/DBusObjectManagerProxy.h"
 
 #include "controllers/BluetoothDeviceController.h"
 #include "views/ItemPickerView.h"

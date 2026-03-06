@@ -5,9 +5,9 @@
 #include <optional>
 
 #include "DBusGattCharacteristic.h"
-#include "IDBusDeviceProxy.h"
 #include "interfaces/IBluetoothDevice.h"
 #include "interfaces/IGattCharacteristic.h"
+#include "proxies/IDBusDeviceProxy.h"
 
 /**
  * @class DBusBluetoothDevice

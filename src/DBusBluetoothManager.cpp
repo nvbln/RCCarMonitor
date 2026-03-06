@@ -1,5 +1,5 @@
 #include "DBusBluetoothManager.h"
-#include "IDBusObjectManagerProxy.h"
+#include "proxies/IDBusObjectManagerProxy.h"
 
 #include <iostream>
 #include <optional>
