@@ -4,7 +4,7 @@
 #include <string>
 
 #include "IDBusCharacteristicProxy.h"
-#include "IGattCharacteristic.h"
+#include "interfaces/IGattCharacteristic.h"
 
 /**
  * @class DBusGattCharacteristic

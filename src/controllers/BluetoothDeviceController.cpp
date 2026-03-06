@@ -1,7 +1,7 @@
 #include "BluetoothDeviceController.h"
 
-#include "IBluetoothDevice.h"
-#include "IBluetoothManager.h"
+#include "interfaces/IBluetoothDevice.h"
+#include "interfaces/IBluetoothManager.h"
 
 #include <memory>
 

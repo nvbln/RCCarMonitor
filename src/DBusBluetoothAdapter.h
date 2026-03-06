@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IBluetoothAdapter.h"
 #include "IDBusAdapterProxy.h"
+#include "interfaces/IBluetoothAdapter.h"
 
 #include <memory>
 

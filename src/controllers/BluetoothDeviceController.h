@@ -2,8 +2,8 @@
 
 #include "Event.h"
 
-#include "IBluetoothDevice.h"
-#include "IBluetoothManager.h"
+#include "interfaces/IBluetoothDevice.h"
+#include "interfaces/IBluetoothManager.h"
 
 #include "views/IItemPickerView.h"
 
