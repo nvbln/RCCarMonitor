@@ -21,6 +21,8 @@ int main() {
   sdbus::ServiceName destination{"org.bluez"};
   sdbus::ObjectPath objectPath{"/"};
 
+  connection->enterEventLoopAsync();
+
   // TODO: Error handling
   std::shared_ptr<IBluetoothManager> bluetoothManager;
   try {
@@ -30,6 +32,12 @@ int main() {
   } catch (const sdbus::Error &e) {
     std::cerr << "Call failed: " << e.getName() << " - " << e.getMessage() << std::endl;
     return 1;
+  }
+
+  // For all adapters, scan for new Bluetooth devices.
+  auto adapters = bluetoothManager->getAdapters();
+  for (auto adapter : adapters) {
+    adapter->startDiscovery();
   }
 
   // Set up the GUI

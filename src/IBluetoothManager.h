@@ -4,6 +4,7 @@
 #include <optional>
 #include <vector>
 
+#include "IBluetoothAdapter.h"
 #include "IBluetoothDevice.h"
 
 /**
@@ -17,6 +18,17 @@
 class IBluetoothManager {
 public:
   virtual ~IBluetoothManager() = default;
+
+  /**
+   * @brief returns the Bluetooth adapters found by the component.
+   *
+   * All adapters that are found by the Bluetooth component are
+   * transformed into adapter objects and stored by the
+   * Bluetooth manager. This function returns those devices in
+   * the form of IBluetoothAdapter.
+   * @return a vector of pointers to the found Bluetooth adapters.
+   */
+  virtual std::vector<std::shared_ptr<IBluetoothAdapter>> getAdapters() const = 0;
 
   /**
    * @brief returns the Bluetooth devices found by the component.

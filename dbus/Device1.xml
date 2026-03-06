@@ -48,27 +48,4 @@
     <property name="WakeAllowed" type="b" access="readwrite"></property>
     <property name="Sets" type="a{oa{sv}}" access="read"></property>
   </interface>
-
-  <interface name="org.freedesktop.DBus.Properties">
-    <method name="Get"><arg name="interface" type="s" direction="in"/>
-      <arg name="name" type="s" direction="in"/>
-      <arg name="value" type="v" direction="out"/>
-    </method>
-
-    <method name="Set">
-      <arg name="interface" type="s" direction="in"/>
-      <arg name="name" type="s" direction="in"/>
-      <arg name="value" type="v" direction="in"/>
-    </method>
-
-    <method name="GetAll">
-      <arg name="interface" type="s" direction="in"/>
-      <arg name="properties" type="a{sv}" direction="out"/>
-    </method>
-
-    <signal name="PropertiesChanged"><arg name="interface" type="s"/>
-      <arg name="changed_properties" type="a{sv}"/>
-      <arg name="invalidated_properties" type="as"/>
-    </signal>
-  </interface>
 </node>

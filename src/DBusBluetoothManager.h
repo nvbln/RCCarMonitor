@@ -4,7 +4,9 @@
 #include <string>
 #include <vector>
 
+#include "DBusBluetoothAdapter.h"
 #include "DBusBluetoothDevice.h"
+#include "IBluetoothAdapter.h"
 #include "IBluetoothDevice.h"
 #include "IBluetoothManager.h"
 #include "IDBusObjectManagerProxy.h"
@@ -31,6 +33,11 @@ public:
   DBusBluetoothManager(std::shared_ptr<IDBusObjectManagerProxy> proxy);
 
   /**
+   * @see IBluetoothManager::getAdapters()
+   */
+  std::vector<std::shared_ptr<IBluetoothAdapter>> getAdapters() const override;
+
+  /**
    * @see IBluetoothManager::getDevices()
    */
   std::vector<std::shared_ptr<IBluetoothDevice>> getDevices() const override;
@@ -43,6 +50,7 @@ public:
 
 private:
   std::shared_ptr<IDBusObjectManagerProxy> mProxy;
+  std::vector<std::shared_ptr<DBusBluetoothAdapter>> mAdapters;
   std::vector<std::shared_ptr<DBusBluetoothDevice>> mDevices;
 
   void handleExistingObjects();
@@ -59,4 +67,26 @@ private:
   findDBusDevice(std::string deviceValue, std::string property = "name") const;
 
   void removeDevice(std::shared_ptr<DBusBluetoothDevice> device);
+
+  /**
+   * @brief Converts a subclass to its superclass.
+   *
+   * In some cases, C++ doesn't do the polymorphism (i.e.
+   * converting SpecificImpl to IGenericInterface) automatically.
+   * This function converts the objects explicitly to the given
+   * superclass.
+   */
+  template <typename Base, typename Derived>
+  std::vector<std::shared_ptr<Base>>
+  castVector(const std::vector<std::shared_ptr<Derived>> input) const {
+    static_assert(std::is_base_of_v<Base, Derived>, "Derived must inherit from Base");
+    std::vector<std::shared_ptr<Base>> output;
+    output.reserve(input.size());
+
+    std::ranges::transform(
+        input, std::back_inserter(output),
+        [](const std::shared_ptr<Derived> &ptr) { return std::static_pointer_cast<Base>(ptr); });
+
+    return output;
+  }
 };

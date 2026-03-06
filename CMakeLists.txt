@@ -65,6 +65,7 @@ file(MAKE_DIRECTORY ${GENERATED_DIR})
 # Define all the xml files.
 set(DBUS_XML_FILES
     ${PROJECT_SOURCE_DIR}/dbus/ObjectManager.xml
+    ${PROJECT_SOURCE_DIR}/dbus/Adapter1.xml
     ${PROJECT_SOURCE_DIR}/dbus/Device1.xml
     ${PROJECT_SOURCE_DIR}/dbus/GattCharacteristic1.xml
 )

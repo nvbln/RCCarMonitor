@@ -5,11 +5,14 @@
 
 #include "IDBusDeviceProxy.h"
 
+#include "DBusAdapterProxy.h"
 #include "DBusCharacteristicProxy.h"
 #include "DBusDeviceProxy.h"
 #include "IDBusCharacteristicProxy.h"
 #include "IDBusDeviceProxy.h"
 #include "IDBusObjectManagerProxy.h"
+
+#include <iostream>
 
 using InterfacesAndPropertiesMap = IDBusObjectManagerProxy::InterfacesAndPropertiesMap;
 
@@ -53,6 +56,14 @@ public:
   void addOnInterfacesRemovedCallback(OnInterfacesRemovedCallback callback) override {
     mOnRemovedCallbacks.push_back(callback);
   }
+
+  /**
+   * @see IDBusObjectManagerProxy::createDevice()
+   */
+  std::shared_ptr<IDBusAdapterProxy> createAdapter(std::string objectPath) override {
+    return std::make_shared<DBusAdapterProxy>(mConnection, mDestination,
+                                              sdbus::ObjectPath{objectPath});
+  };
 
   /**
    * @see IDBusObjectManagerProxy::createDevice()

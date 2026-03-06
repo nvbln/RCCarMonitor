@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IDBusAdapterProxy.h"
 #include "IDBusCharacteristicProxy.h"
 #include "IDBusDeviceProxy.h"
 #include <sdbus-c++/sdbus-c++.h>
@@ -48,6 +49,14 @@ public:
    * @param callback The function to notify of the removed interface.
    */
   virtual void addOnInterfacesRemovedCallback(const OnInterfacesRemovedCallback callback) = 0;
+
+  /**
+   * @brief creates a new instance of IDBusAdapterProxy with the given path.
+   *
+   * @param objectPath The path of the adapter.
+   * @return a pointer to the newly created IDbusAdapterProxy instance.
+   */
+  virtual std::shared_ptr<IDBusAdapterProxy> createAdapter(std::string objectPath) = 0;
 
   /**
    * @brief creates a new instance of IDBusDeviceProxy with the given path.
