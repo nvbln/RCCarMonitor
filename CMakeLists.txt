@@ -121,6 +121,7 @@ add_executable(monitor_test
     test/DBusBluetoothDeviceTest.cpp
     test/DBusBluetoothManagerTest.cpp
     test/BluetoothDeviceControllerTest.cpp
+    test/DriveLockControllerTest.cpp
 )
 
 target_link_libraries(monitor_test

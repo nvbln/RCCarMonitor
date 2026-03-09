@@ -1,5 +1,5 @@
 #include "DBusBluetoothManager.h"
-#include "IDBusObjectManagerProxy.h"
+#include "proxies/IDBusObjectManagerProxy.h"
 
 #include "mock/MockDBusDeviceProxy.h"
 
@@ -18,6 +18,8 @@ public:
   MOCK_METHOD(void, addOnInterfacesAddedCallback, (const OnInterfacesAddedCallback callback),
               (override));
   MOCK_METHOD(void, addOnInterfacesRemovedCallback, (const OnInterfacesRemovedCallback callback),
+              (override));
+  MOCK_METHOD(std::shared_ptr<IDBusAdapterProxy>, createAdapter, (std::string objectPath),
               (override));
   MOCK_METHOD(std::shared_ptr<IDBusDeviceProxy>, createDevice, (std::string objectPath),
               (override));
@@ -52,6 +54,7 @@ TEST(DBusBluetoothManagerTests, shouldGetAndFindDevices) {
         {sdbus::PropertyName{"Name"}, sdbus::Variant{fakeDeviceName}},
         {sdbus::PropertyName{"Alias"}, sdbus::Variant{fakeDeviceName}},
         {sdbus::PropertyName{"Paired"}, sdbus::Variant{false}},
+        {sdbus::PropertyName{"RSSI"}, sdbus::Variant{0}},
         {sdbus::PropertyName{"UUIDs"},
          sdbus::Variant{std::vector<std::string>{"00001800-0000-1000-8000-00805f9b34fb"}}}}}};
 
@@ -67,3 +70,5 @@ TEST(DBusBluetoothManagerTests, shouldGetAndFindDevices) {
   removedCallback(fakeDevicePath, std::vector{deviceInterface});
   EXPECT_EQ(0, bluetoothManager->getDevices().size());
 }
+
+// TODO: Add test for the adapter

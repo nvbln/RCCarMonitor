@@ -1,5 +1,4 @@
 #include "DBusBluetoothDevice.h"
-#include "IDBusDeviceProxy.h"
 
 #include "mock/MockDBusDeviceProxy.h"
 

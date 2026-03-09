@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IDBusDeviceProxy.h"
+#include "proxies/IDBusDeviceProxy.h"
 #include <gmock/gmock.h>
 
 class MockDBusDeviceProxy : public IDBusDeviceProxy {
