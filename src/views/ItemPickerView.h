@@ -34,6 +34,16 @@ public:
   void draw() override;
 
   /**
+   * @see IView::enable()
+   */
+  void enable() override { mDisabled = false; }
+
+  /**
+   * @see IView::disable()
+   */
+  void disable() override { mDisabled = true; }
+
+  /**
    * @brief Subscribes for the item selected by the user.
    *
    * @see IItemPickerView::subscribe()
@@ -45,6 +55,7 @@ public:
 private:
   std::vector<std::string> mLabels;
   int mSelectedIdx = -1;
+  bool mDisabled = false;
 
   Event<Callback, int> event;
 };

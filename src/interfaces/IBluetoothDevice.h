@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IGattCharacteristic.h"
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -14,6 +15,12 @@
  */
 class IBluetoothDevice {
 public:
+  /**
+   * @brief Callback to get notified of changes to the GattCharacteristic.
+   * @return the GattCharacteristic that is updated.
+   */
+  using Callback = std::function<void(std::shared_ptr<IGattCharacteristic>)>;
+
   virtual ~IBluetoothDevice() = default;
 
   /**
@@ -57,6 +64,24 @@ public:
    */
   virtual std::optional<std::shared_ptr<IGattCharacteristic>>
   findCharacteristic(std::string uuid) = 0;
+
+  /**
+   * @brief subscribes to notifications of added characteristics.
+   *
+   * If a characteristic gets added to the device, the callback
+   * is triggered and the added characteristic is send to the
+   * subscriber.
+   */
+  virtual void subscribeToAddCharacteristic(Callback callback) = 0;
+
+  /**
+   * @brief subscribes to notifications of removed characteristics.
+   *
+   * If a characteristic gets removed from the device, the callback
+   * is triggered and the removed characteristic is send to the
+   * subscriber.
+   */
+  virtual void subscribeToRemoveCharacteristic(Callback callback) = 0;
 
   // TODO: Add UUID
 };

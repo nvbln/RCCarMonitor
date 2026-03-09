@@ -16,4 +16,14 @@ public:
    * Allows all views to be drawn with a simple call to draw().
    */
   virtual void draw() = 0;
+
+  /**
+   * @brief Disables the View for interaction.
+   */
+  virtual void enable() = 0;
+
+  /**
+   * @brief Disables the View from interaction.
+   */
+  virtual void disable() = 0;
 };

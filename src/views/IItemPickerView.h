@@ -7,7 +7,7 @@
 #include <vector>
 
 /**
- * @Class IItemPickerView
+ * @class IItemPickerView
  * @brief Interface for Views with the purpose of picking an element from a list.
  *
  * The general flow of the IItemPickerView is that it displays a list of items (strings).

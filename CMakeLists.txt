@@ -93,7 +93,9 @@ set(SRCS
     ${PROJECT_SOURCE_DIR}/src/DBusBluetoothManager.cpp
     ${PROJECT_SOURCE_DIR}/src/DBusBluetoothDevice.cpp
     ${PROJECT_SOURCE_DIR}/src/views/ItemPickerView.cpp
+    ${PROJECT_SOURCE_DIR}/src/views/ToggleableView.cpp
     ${PROJECT_SOURCE_DIR}/src/controllers/BluetoothDeviceController.cpp
+    ${PROJECT_SOURCE_DIR}/src/controllers/DriveLockController.cpp
 )
 
 add_library(application ${SRCS})

@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "DBusGattCharacteristic.h"
+#include "Event.h"
 #include "interfaces/IBluetoothDevice.h"
 #include "interfaces/IGattCharacteristic.h"
 #include "proxies/IDBusDeviceProxy.h"
@@ -79,7 +80,16 @@ public:
    */
   std::optional<std::shared_ptr<IGattCharacteristic>> findCharacteristic(std::string uuid) override;
 
+  void subscribeToAddCharacteristic(Callback callback) override { addEvent.subscribe(callback); }
+
+  void subscribeToRemoveCharacteristic(Callback callback) override {
+    removeEvent.subscribe(callback);
+  }
+
 private:
   std::shared_ptr<IDBusDeviceProxy> mProxy;
   std::vector<std::shared_ptr<DBusGattCharacteristic>> mCharacteristics;
+
+  Event<Callback, std::shared_ptr<IGattCharacteristic>> addEvent;
+  Event<Callback, std::shared_ptr<IGattCharacteristic>> removeEvent;
 };
