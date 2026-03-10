@@ -6,11 +6,10 @@
 
 #include "controllers/BluetoothDeviceController.h"
 #include "controllers/DriveLockController.h"
+#include "controllers/MovementStatusController.h"
 #include "views/ItemPickerView.h"
+#include "views/StatusView.h"
 #include "views/ToggleableView.h"
-
-#include <chrono>
-#include <thread>
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
@@ -18,6 +17,7 @@
 #include <GLFW/glfw3.h>
 
 static constexpr const char *DRIVE_LOCK_CHAR_ID = "19B10001-E8F2-537E-4F6C-D104768A1214";
+static constexpr const char *MOVEMENT_STATUS_ID = "A92E318E-9EC4-4DB5-A861-7D0B6B77A2A1";
 
 int main() {
   // Create a proxy for the BlueZ ObjectManager.
@@ -59,7 +59,9 @@ int main() {
   ImGui_ImplOpenGL3_Init();
 
   std::unique_ptr<DriveLockController> driveLockController = nullptr;
+  std::unique_ptr<MovementStatusController> movementStatusController = nullptr;
   std::shared_ptr<IToggleableView> toggleableView = std::make_shared<ToggleableView>(false);
+  std::shared_ptr<IStatusView> statusView = std::make_shared<StatusView>();
 
   std::shared_ptr<IGattCharacteristic> characteristic = nullptr;
   std::shared_ptr<IBluetoothDevice> device = nullptr;
@@ -94,7 +96,15 @@ int main() {
       } else {
         driveLockController->update();
       }
+
+      if (movementStatusController == nullptr) {
+        movementStatusController =
+            std::make_unique<MovementStatusController>(device, statusView, MOVEMENT_STATUS_ID);
+      } else {
+        movementStatusController->update();
+      }
       toggleableView->draw();
+      statusView->draw();
     }
 
     ImGui::Render();

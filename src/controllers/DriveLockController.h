@@ -1,6 +1,7 @@
 #pragma once
 
 #include "interfaces/IBluetoothDevice.h"
+#include "interfaces/IGattCharacteristic.h"
 #include "views/IToggleableView.h"
 
 #include <memory>

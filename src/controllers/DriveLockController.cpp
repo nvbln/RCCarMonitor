@@ -5,6 +5,9 @@
 #include <memory>
 #include <string>
 
+// TODO: Add safety features for when the characteristic is not immediately
+// TODO: initialised.
+
 DriveLockController::DriveLockController(std::shared_ptr<IBluetoothDevice> device,
                                          std::shared_ptr<IToggleableView> toggleable,
                                          std::string characteristicId)

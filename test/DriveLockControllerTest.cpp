@@ -2,6 +2,7 @@
 #include "views/IToggleableView.h"
 
 #include "mock/MockBluetoothDevice.h"
+#include "mock/MockGattCharacteristic.h"
 
 #include <memory>
 
@@ -13,13 +14,6 @@ using ::testing::Return;
 
 static const std::vector<uint8_t> BytesTrue = {0x01};
 static const std::vector<uint8_t> BytesFalse = {0x00};
-
-class MockGattCharacteristic : public IGattCharacteristic {
-public:
-  MOCK_METHOD(std::string, uuid, (), (override));
-  MOCK_METHOD(std::vector<uint8_t>, read, (), (override));
-  MOCK_METHOD(void, write, (const std::vector<uint8_t> &value), (override));
-};
 
 class MockToggleableView : public IToggleableView {
 public:

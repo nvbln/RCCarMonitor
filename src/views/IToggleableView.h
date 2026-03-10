@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IView.h"
+#include "IInteractiveView.h"
 
 #include <functional>
 
@@ -11,7 +11,7 @@
  * A toggleable view generally looks like a label (describing/labelling the toggle)
  * on one side, and a button or switch with the boolean setting on the other side.
  */
-class IToggleableView : public IView {
+class IToggleableView : public IInteractiveView {
 public:
   /**
    * @brief Callback to receive the new boolean value of the toggle after user interaction.

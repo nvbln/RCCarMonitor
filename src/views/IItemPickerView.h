@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IView.h"
+#include "IInteractiveView.h"
 
 #include <functional>
 #include <string>
@@ -16,7 +16,7 @@
  * the selected item can subscribe to the View and receive the index of the item in
  * the list once selected by the user.
  */
-class IItemPickerView : public IView {
+class IItemPickerView : public IInteractiveView {
 public:
   /**
    * @brief Callback to receive the index of the selected item in the list.

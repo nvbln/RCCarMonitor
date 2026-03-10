@@ -94,8 +94,10 @@ set(SRCS
     ${PROJECT_SOURCE_DIR}/src/DBusBluetoothDevice.cpp
     ${PROJECT_SOURCE_DIR}/src/views/ItemPickerView.cpp
     ${PROJECT_SOURCE_DIR}/src/views/ToggleableView.cpp
+    ${PROJECT_SOURCE_DIR}/src/views/StatusView.cpp
     ${PROJECT_SOURCE_DIR}/src/controllers/BluetoothDeviceController.cpp
     ${PROJECT_SOURCE_DIR}/src/controllers/DriveLockController.cpp
+    ${PROJECT_SOURCE_DIR}/src/controllers/MovementStatusController.cpp
 )
 
 add_library(application ${SRCS})
@@ -122,6 +124,7 @@ add_executable(monitor_test
     test/DBusBluetoothManagerTest.cpp
     test/BluetoothDeviceControllerTest.cpp
     test/DriveLockControllerTest.cpp
+    test/MovementStatusControllerTest.cpp
 )
 
 target_link_libraries(monitor_test
