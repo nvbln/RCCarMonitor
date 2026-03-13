@@ -1,61 +1,42 @@
 #include "controllers/DriveLockController.h"
-#include "interfaces/IBluetoothDevice.h"
+#include "interfaces/IGattCharacteristicHandler.h"
 #include "views/IToggleableView.h"
 
 #include <memory>
-#include <string>
 
-// TODO: Add safety features for when the characteristic is not immediately
-// TODO: initialised.
-
-DriveLockController::DriveLockController(std::shared_ptr<IBluetoothDevice> device,
-                                         std::shared_ptr<IToggleableView> toggleable,
-                                         std::string characteristicId)
-    : mBluetoothDevice(device), mToggleable(toggleable) {
-  toggleable->disable();
-  auto result = device->findCharacteristic(characteristicId);
-
-  if (result.has_value()) {
-    mChar = *result;
+DriveLockController::DriveLockController(std::shared_ptr<IToggleableView> toggleable,
+                                         std::shared_ptr<IGattCharacteristicHandler> handler)
+    : mToggleable(toggleable), mHandler(handler) {
+  if (mHandler->isAvailable()) {
     toggleable->enable();
   } else {
-    device->subscribeToAddCharacteristic([&](std::shared_ptr<IGattCharacteristic> gattChar) {
-      if (gattChar->uuid() == characteristicId) {
-        this->mChar = gattChar;
-        toggleable->enable();
-      }
-    });
+    toggleable->disable();
   }
 
-  device->subscribeToRemoveCharacteristic([&](std::shared_ptr<IGattCharacteristic> gattChar) {
-    if (mChar != nullptr && mChar->uuid() == characteristicId) {
-      this->mChar = nullptr;
-      toggleable->disable();
-    }
-  });
+  mHandler->onAvailable([&toggleable]() { toggleable->enable(); });
+  mHandler->onUnavailable([&toggleable]() { toggleable->disable(); });
 
   mToggleable->subscribe([this](bool on) { writeToggle(on); });
   update();
 }
 
 void DriveLockController::update() {
-  bool on = readToggle();
-  mToggleable->update(on);
-}
-
-void DriveLockController::writeToggle(bool on) {
-  if (on) {
-    mChar->write(BytesTrue);
-  } else {
-    mChar->write(BytesFalse);
+  auto valueOpt = mHandler->read();
+  if (valueOpt.has_value()) {
+    std::vector<uint8_t> value = *valueOpt;
+    if (value == BytesTrue) {
+      mToggleable->update(true);
+    } else {
+      mToggleable->update(false);
+    }
   }
 }
 
-bool DriveLockController::readToggle() {
-  std::vector<uint8_t> value = mChar->read();
-  if (value == BytesTrue) {
-    return true;
+// TODO: Consider what to do if write fails.
+void DriveLockController::writeToggle(bool on) {
+  if (on) {
+    mHandler->write(BytesTrue);
   } else {
-    return false;
+    mHandler->write(BytesFalse);
   }
 }

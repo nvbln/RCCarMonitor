@@ -92,6 +92,7 @@ add_custom_target(generate_dbus_headers ALL DEPENDS ${GENERATED_HEADERS})
 set(SRCS
     ${PROJECT_SOURCE_DIR}/src/DBusBluetoothManager.cpp
     ${PROJECT_SOURCE_DIR}/src/DBusBluetoothDevice.cpp
+    ${PROJECT_SOURCE_DIR}/src/GattCharacteristicHandler.cpp
     ${PROJECT_SOURCE_DIR}/src/views/ItemPickerView.cpp
     ${PROJECT_SOURCE_DIR}/src/views/ToggleableView.cpp
     ${PROJECT_SOURCE_DIR}/src/views/StatusView.cpp

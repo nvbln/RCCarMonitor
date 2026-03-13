@@ -2,9 +2,10 @@
 
 #include <cstdint>
 
-#include "interfaces/IBluetoothDevice.h"
-#include "interfaces/IGattCharacteristic.h"
+#include "interfaces/IGattCharacteristicHandler.h"
 #include "views/IStatusView.h"
+
+#include <memory>
 
 /**
  * @brief Describes the type of movement that the vehicle is executing.
@@ -26,13 +27,15 @@ public:
    * @param device The RC Car, should contain a movement status characteristic.
    * @param statusView The view that the movement status should be displayed in.
    */
-  MovementStatusController(std::shared_ptr<IBluetoothDevice> device,
-                           std::shared_ptr<IStatusView> statusView, std::string characteristicId);
+  MovementStatusController(std::shared_ptr<IStatusView> statusView,
+                           std::shared_ptr<IGattCharacteristicHandler> handler)
+      : mView(statusView), mHandler(handler) {
+    update();
+  }
 
   void update();
 
 private:
-  std::shared_ptr<IBluetoothDevice> mDevice;
   std::shared_ptr<IStatusView> mView;
-  std::shared_ptr<IGattCharacteristic> mChar;
+  std::shared_ptr<IGattCharacteristicHandler> mHandler;
 };

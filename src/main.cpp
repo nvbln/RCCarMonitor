@@ -4,9 +4,11 @@
 #include "DBusBluetoothManager.h"
 #include "proxies/DBusObjectManagerProxy.h"
 
+#include "GattCharacteristicHandler.h"
 #include "controllers/BluetoothDeviceController.h"
 #include "controllers/DriveLockController.h"
 #include "controllers/MovementStatusController.h"
+#include "interfaces/IGattCharacteristicHandler.h"
 #include "views/ItemPickerView.h"
 #include "views/StatusView.h"
 #include "views/ToggleableView.h"
@@ -18,6 +20,7 @@
 
 static constexpr const char *DRIVE_LOCK_CHAR_ID = "19B10001-E8F2-537E-4F6C-D104768A1214";
 static constexpr const char *MOVEMENT_STATUS_ID = "A92E318E-9EC4-4DB5-A861-7D0B6B77A2A1";
+static constexpr const char *ULTRASOUND_CHAR_ID = "16B31004-5930-47DF-82EE-A24F976AA56D";
 
 int main() {
   // Create a proxy for the BlueZ ObjectManager.
@@ -91,15 +94,16 @@ int main() {
       itemPicker->draw();
     } else {
       if (driveLockController == nullptr) {
-        driveLockController =
-            std::make_unique<DriveLockController>(device, toggleableView, DRIVE_LOCK_CHAR_ID);
+        auto charHandler = std::make_shared<GattCharacteristicHandler>(device, DRIVE_LOCK_CHAR_ID);
+        driveLockController = std::make_unique<DriveLockController>(toggleableView, charHandler);
       } else {
         driveLockController->update();
       }
 
       if (movementStatusController == nullptr) {
+        auto charHandler = std::make_shared<GattCharacteristicHandler>(device, MOVEMENT_STATUS_ID);
         movementStatusController =
-            std::make_unique<MovementStatusController>(device, statusView, MOVEMENT_STATUS_ID);
+            std::make_unique<MovementStatusController>(statusView, charHandler);
       } else {
         movementStatusController->update();
       }

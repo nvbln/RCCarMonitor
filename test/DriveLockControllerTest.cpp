@@ -1,8 +1,7 @@
 #include "controllers/DriveLockController.h"
 #include "views/IToggleableView.h"
 
-#include "mock/MockBluetoothDevice.h"
-#include "mock/MockGattCharacteristic.h"
+#include "mock/MockGattCharacteristicHandler.h"
 
 #include <memory>
 
@@ -25,12 +24,9 @@ public:
 };
 
 TEST(DriveLockControllerTests, whenButtonClickedInViewWriteToChar) {
-  auto mockGattChar = std::make_shared<NiceMock<MockGattCharacteristic>>();
-  EXPECT_CALL(*mockGattChar, write(BytesTrue));
-  EXPECT_CALL(*mockGattChar, write(BytesFalse));
-
-  auto mockDevice = std::make_shared<NiceMock<MockBluetoothDevice>>();
-  ON_CALL(*mockDevice, findCharacteristic).WillByDefault(Return(std::make_optional(mockGattChar)));
+  auto mockHandler = std::make_shared<NiceMock<MockGattCharacteristicHandler>>();
+  EXPECT_CALL(*mockHandler, write(BytesTrue));
+  EXPECT_CALL(*mockHandler, write(BytesFalse));
 
   auto mockToggleable = std::make_shared<NiceMock<MockToggleableView>>();
   IToggleableView::Callback callback;
@@ -38,8 +34,7 @@ TEST(DriveLockControllerTests, whenButtonClickedInViewWriteToChar) {
     callback = cb;
   });
 
-  std::string mockId = "MOCK_ID";
-  DriveLockController controller = DriveLockController(mockDevice, mockToggleable, mockId);
+  DriveLockController controller = DriveLockController(mockToggleable, mockHandler);
 
   // Trigger callback
   callback(true);
@@ -47,18 +42,14 @@ TEST(DriveLockControllerTests, whenButtonClickedInViewWriteToChar) {
 }
 
 TEST(DriveLockControllerTests, whenPropertyChangedInCharUpdateView) {
-  auto mockGattChar = std::make_shared<NiceMock<MockGattCharacteristic>>();
-  EXPECT_CALL(*mockGattChar, read).WillOnce(Return(BytesTrue)).WillOnce(Return(BytesFalse));
-
-  auto mockDevice = std::make_shared<NiceMock<MockBluetoothDevice>>();
-  ON_CALL(*mockDevice, findCharacteristic).WillByDefault(Return(std::make_optional(mockGattChar)));
+  auto mockHandler = std::make_shared<NiceMock<MockGattCharacteristicHandler>>();
+  EXPECT_CALL(*mockHandler, read).WillOnce(Return(BytesTrue)).WillOnce(Return(BytesFalse));
 
   auto mockToggleable = std::make_shared<NiceMock<MockToggleableView>>();
   EXPECT_CALL(*mockToggleable, update(true));
   EXPECT_CALL(*mockToggleable, update(false));
 
-  std::string mockId = "MOCK_ID";
-  DriveLockController controller = DriveLockController(mockDevice, mockToggleable, mockId);
+  DriveLockController controller = DriveLockController(mockToggleable, mockHandler);
 
   // Only need one update() call to verify true and false
   // because the constructor also calls update().

@@ -1,11 +1,9 @@
 #pragma once
 
-#include "interfaces/IBluetoothDevice.h"
-#include "interfaces/IGattCharacteristic.h"
+#include "interfaces/IGattCharacteristicHandler.h"
 #include "views/IToggleableView.h"
 
 #include <memory>
-#include <string>
 
 /**
  * @class DriveLockController
@@ -25,13 +23,17 @@ public:
    * @param device The RC Car, should contain a drive lock characteristic.
    * @param toggleable a UI element that allows for toggling the setting.
    */
-  DriveLockController(std::shared_ptr<IBluetoothDevice> device,
-                      std::shared_ptr<IToggleableView> toggleable, std::string characteristicId);
+  DriveLockController(std::shared_ptr<IToggleableView> toggleable,
+                      std::shared_ptr<IGattCharacteristicHandler> handler);
 
   /**
    * @brief Updates the view with the most recent setting.
    */
   void update();
+
+private:
+  std::shared_ptr<IToggleableView> mToggleable;
+  std::shared_ptr<IGattCharacteristicHandler> mHandler;
 
   /**
    * @brief Writes the user set toggle value to the device.
@@ -39,16 +41,4 @@ public:
    * @param on true if on, false if off.
    */
   void writeToggle(bool on);
-
-  /**
-   * @brief Reads the toggle value from the device.
-   *
-   * @return true if on, false if off.
-   */
-  bool readToggle();
-
-private:
-  std::shared_ptr<IBluetoothDevice> mBluetoothDevice;
-  std::shared_ptr<IToggleableView> mToggleable;
-  std::shared_ptr<IGattCharacteristic> mChar;
 };
