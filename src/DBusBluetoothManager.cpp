@@ -44,7 +44,14 @@ void DBusBluetoothManager::onInterfacesAdded(
 
     // Filter on devices that are currently available (have a receive signal strength property)
     if (interface == "org.bluez.Device1" && properties.count(sdbus::MemberName{"RSSI"}) > 0) {
-      mDevices.push_back(std::make_shared<DBusBluetoothDevice>(mProxy->createDevice(objectPath)));
+      mDevices.push_back(std::make_shared<DBusBluetoothDevice>(
+          mProxy->createDevice(objectPath), mProxy->createProperties(objectPath)));
+      auto aliasProperty = properties.find(sdbus::PropertyName{"Alias"});
+      if (aliasProperty != properties.end()) {
+        std::cout << "Device with alias: ";
+        std::cout << properties.at(sdbus::PropertyName{"Alias"}).get<std::string>();
+        std::cout << " was added." << std::endl;
+      }
     } else if (interface == "org.bluez.GattCharacteristic1") {
       std::cout << "Added characteristic: " << objectPath << std::endl;
       std::string address = this->extractDeviceAddressFromObjectPath(objectPath);
@@ -57,12 +64,6 @@ void DBusBluetoothManager::onInterfacesAdded(
       } else {
         std::cout << "Couldn't find device: " << address << std::endl;
       }
-    }
-    auto aliasProperty = properties.find(sdbus::PropertyName{"Alias"});
-    if (aliasProperty != properties.end()) {
-      std::cout << "Device with alias: ";
-      std::cout << properties.at(sdbus::PropertyName{"Alias"}).get<std::string>();
-      std::cout << " was added." << std::endl;
     }
   }
 }

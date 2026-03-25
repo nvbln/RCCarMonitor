@@ -9,6 +9,7 @@
 #include "interfaces/IBluetoothDevice.h"
 #include "interfaces/IGattCharacteristic.h"
 #include "proxies/IDBusDeviceProxy.h"
+#include "proxies/IDBusPropertiesProxy.h"
 
 /**
  * @class DBusBluetoothDevice
@@ -24,8 +25,19 @@ public:
    * @brief creates an instance representing the DBus Bluetooth device.
    *
    * @param proxy the proxy through which the device communicates with SDBus.
+   * @param propertiesProxy the proxy that notifies the object of any property changes.
    */
-  DBusBluetoothDevice(std::shared_ptr<IDBusDeviceProxy> proxy) : mProxy(proxy) {}
+  DBusBluetoothDevice(std::shared_ptr<IDBusDeviceProxy> proxy,
+                      std::shared_ptr<IDBusPropertiesProxy> propertiesProxy)
+      : mProxy(proxy), mPropertiesProxy(propertiesProxy), mName(proxy->name()),
+        mAddress(proxy->address()) {
+    propertiesProxy->subscribeToOnPropertiesChanged(
+        [this](const sdbus::InterfaceName &interface,
+               const std::map<sdbus::MemberName, sdbus::Variant> &changedProperties,
+               const std::vector<sdbus::MemberName> &invalidatedProperties) {
+          this->onPropertiesChanged(interface, changedProperties, invalidatedProperties);
+        });
+  }
 
   /**
    * @brief adds a DBus GATT Characteristic to the device.
@@ -68,12 +80,12 @@ public:
   /**
    * @see IBluetoothDevice::name()
    */
-  std::string name() override { return mProxy->name(); }
+  std::string name() override { return mName; }
 
   /**
    * @see IBluetoothDevice::address()
    */
-  std::string address() override { return mProxy->address(); }
+  std::string address() override { return mAddress; }
 
   /**
    * @see IBluetoothDevice::findCharacteristic()
@@ -88,8 +100,25 @@ public:
 
 private:
   std::shared_ptr<IDBusDeviceProxy> mProxy;
+  std::shared_ptr<IDBusPropertiesProxy> mPropertiesProxy;
   std::vector<std::shared_ptr<DBusGattCharacteristic>> mCharacteristics;
+
+  std::string mName;
+  std::string mAddress;
 
   Event<Callback, std::shared_ptr<IGattCharacteristic>> addEvent;
   Event<Callback, std::shared_ptr<IGattCharacteristic>> removeEvent;
+
+  /**
+   * @brief Called when a property of the device changes.
+   *
+   * This callback takes care of changing locally saved properties in case they get updated.
+   *
+   * @param interface The interface that gets updated (i.e. Device1 or Battery1).
+   * @param changedProperties The new values of the properties that were changed.
+   * @param invalidatedProperties The properaties that have been invalidated.
+   */
+  void onPropertiesChanged(const sdbus::InterfaceName &interface,
+                           const std::map<sdbus::MemberName, sdbus::Variant> &changedProperties,
+                           const std::vector<sdbus::MemberName> &invalidatedProperties);
 };

@@ -3,6 +3,7 @@
 #include "IDBusAdapterProxy.h"
 #include "IDBusCharacteristicProxy.h"
 #include "IDBusDeviceProxy.h"
+#include "IDBusPropertiesProxy.h"
 #include <sdbus-c++/sdbus-c++.h>
 
 /**
@@ -74,6 +75,16 @@ public:
    */
   virtual std::shared_ptr<IDBusCharacteristicProxy>
   createCharacteristic(std::string objectPath) = 0;
+
+  /**
+   * @brief creates an instance of the Properties interface on the given path.
+   *
+   * The instance allows for listening for property changes.
+   *
+   * @param objectPath The path of the object of interest.
+   * @return a pointer to the newly created IDBusPropertiesProxy instance.
+   */
+  virtual std::shared_ptr<IDBusPropertiesProxy> createProperties(std::string objectPath) = 0;
 
   /**
    * @brief retrieves the objects that the ObjectManager currently holds.

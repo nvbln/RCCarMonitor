@@ -44,3 +44,20 @@ DBusBluetoothDevice::findDBusCharacteristic(std::string value, std::string prope
 
   return *iterator;
 }
+
+void DBusBluetoothDevice::onPropertiesChanged(
+    const sdbus::InterfaceName &interface,
+    const std::map<sdbus::MemberName, sdbus::Variant> &changedProperties,
+    const std::vector<sdbus::MemberName> &invalidatedProperties) {
+
+  // Sanity check such that only property changes for the device are processed.
+  if (interface == "org.bluez.Device1") {
+    for (const auto &[name, value] : changedProperties) {
+      if (name == "Name") {
+        mName = value.get<std::string>();
+      } else if (name == "Address") {
+        mAddress = value.get<std::string>();
+      }
+    }
+  }
+}

@@ -8,11 +8,11 @@
 #include "DBusAdapterProxy.h"
 #include "DBusCharacteristicProxy.h"
 #include "DBusDeviceProxy.h"
+#include "DBusPropertiesProxy.h"
 #include "IDBusCharacteristicProxy.h"
 #include "IDBusDeviceProxy.h"
 #include "IDBusObjectManagerProxy.h"
-
-#include <iostream>
+#include "IDBusPropertiesProxy.h"
 
 using InterfacesAndPropertiesMap = IDBusObjectManagerProxy::InterfacesAndPropertiesMap;
 
@@ -58,7 +58,7 @@ public:
   }
 
   /**
-   * @see IDBusObjectManagerProxy::createDevice()
+   * @see IDBusObjectManagerProxy::createAdapter()
    */
   std::shared_ptr<IDBusAdapterProxy> createAdapter(std::string objectPath) override {
     return std::make_shared<DBusAdapterProxy>(mConnection, mDestination,
@@ -79,6 +79,14 @@ public:
   std::shared_ptr<IDBusCharacteristicProxy> createCharacteristic(std::string objectPath) override {
     return std::make_shared<DBusCharacteristicProxy>(mConnection, mDestination,
                                                      sdbus::ObjectPath{objectPath});
+  }
+
+  /**
+   * @see IDBusObjectManagerProxy::createProperties()
+   */
+  std::shared_ptr<IDBusPropertiesProxy> createProperties(std::string objectPath) override {
+    return std::make_shared<DBusPropertiesProxy>(mConnection, mDestination,
+                                                 sdbus::ObjectPath{objectPath});
   }
 
   /**

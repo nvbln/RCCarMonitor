@@ -2,6 +2,7 @@
 #include "proxies/IDBusObjectManagerProxy.h"
 
 #include "mock/MockDBusDeviceProxy.h"
+#include "mock/MockDBusPropertiesProxy.h"
 
 #include <sdbus-c++/sdbus-c++.h>
 
@@ -22,6 +23,8 @@ public:
   MOCK_METHOD(std::shared_ptr<IDBusAdapterProxy>, createAdapter, (std::string objectPath),
               (override));
   MOCK_METHOD(std::shared_ptr<IDBusDeviceProxy>, createDevice, (std::string objectPath),
+              (override));
+  MOCK_METHOD(std::shared_ptr<IDBusPropertiesProxy>, createProperties, (std::string objectPath),
               (override));
   MOCK_METHOD(std::shared_ptr<IDBusCharacteristicProxy>, createCharacteristic,
               (std::string objectPath), (override));
@@ -59,9 +62,11 @@ TEST(DBusBluetoothManagerTests, shouldGetAndFindDevices) {
          sdbus::Variant{std::vector<std::string>{"00001800-0000-1000-8000-00805f9b34fb"}}}}}};
 
   auto mockDeviceProxy = std::make_shared<NiceMock<MockDBusDeviceProxy>>();
+  auto mockPropertiesProxy = std::make_shared<NiceMock<MockDBusPropertiesProxy>>();
   ON_CALL(*mockDeviceProxy, address).WillByDefault(Return(fakeDeviceAddress));
   ON_CALL(*mockDeviceProxy, name).WillByDefault(Return(fakeDeviceName));
   ON_CALL(*mockProxy, createDevice).WillByDefault(Return(mockDeviceProxy));
+  ON_CALL(*mockProxy, createProperties).WillByDefault(Return(mockPropertiesProxy));
 
   // Test the code
   addedCallback(fakeDevicePath, fakeDeviceProperties);

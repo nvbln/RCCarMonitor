@@ -1,6 +1,8 @@
 #include "DBusBluetoothDevice.h"
 
 #include "mock/MockDBusDeviceProxy.h"
+#include "mock/MockDBusPropertiesProxy.h"
+#include "proxies/IDBusPropertiesProxy.h"
 
 #include <memory>
 #include <string>
@@ -21,7 +23,8 @@ public:
 
 TEST(DBusBluetoothDeviceTests, shouldConnectDeviceOnConnect) {
   auto mockProxy = std::make_shared<NiceMock<MockDBusDeviceProxy>>();
-  auto bluetoothDevice = std::make_unique<DBusBluetoothDevice>(mockProxy);
+  auto mockPropertiesProxy = std::make_shared<NiceMock<MockDBusPropertiesProxy>>();
+  auto bluetoothDevice = std::make_unique<DBusBluetoothDevice>(mockProxy, mockPropertiesProxy);
   EXPECT_CALL(*mockProxy, connect());
 
   bluetoothDevice->connect();
@@ -29,7 +32,8 @@ TEST(DBusBluetoothDeviceTests, shouldConnectDeviceOnConnect) {
 
 TEST(DBusBluetoothDeviceTests, shouldConnectDeviceOnDisconnect) {
   auto mockProxy = std::make_shared<NiceMock<MockDBusDeviceProxy>>();
-  auto bluetoothDevice = std::make_unique<DBusBluetoothDevice>(mockProxy);
+  auto mockPropertiesProxy = std::make_shared<NiceMock<MockDBusPropertiesProxy>>();
+  auto bluetoothDevice = std::make_unique<DBusBluetoothDevice>(mockProxy, mockPropertiesProxy);
   EXPECT_CALL(*mockProxy, disconnect());
 
   bluetoothDevice->disconnect();
@@ -37,7 +41,8 @@ TEST(DBusBluetoothDeviceTests, shouldConnectDeviceOnDisconnect) {
 
 TEST(DBusBluetoothDeviceTests, shouldReturnCorrectBoolForIsConnected) {
   auto mockProxy = std::make_shared<NiceMock<MockDBusDeviceProxy>>();
-  auto bluetoothDevice = std::make_unique<DBusBluetoothDevice>(mockProxy);
+  auto mockPropertiesProxy = std::make_shared<NiceMock<MockDBusPropertiesProxy>>();
+  auto bluetoothDevice = std::make_unique<DBusBluetoothDevice>(mockProxy, mockPropertiesProxy);
 
   EXPECT_CALL(*mockProxy, isConnected()).Times(1).WillOnce(Return(true));
   EXPECT_TRUE(bluetoothDevice->isConnected());
@@ -48,23 +53,46 @@ TEST(DBusBluetoothDeviceTests, shouldReturnCorrectBoolForIsConnected) {
 
 TEST(DBusBluetoothDeviceTests, shouldReturnDeviceNameUponRequest) {
   auto mockProxy = std::make_shared<NiceMock<MockDBusDeviceProxy>>();
-  auto bluetoothDevice = std::make_unique<DBusBluetoothDevice>(mockProxy);
+  auto mockPropertiesProxy = std::make_shared<NiceMock<MockDBusPropertiesProxy>>();
+
   EXPECT_CALL(*mockProxy, name()).Times(1).WillOnce(Return("Test"));
+  IDBusPropertiesProxy::OnPropertiesChangedCallback callback;
+  EXPECT_CALL(*mockPropertiesProxy, subscribeToOnPropertiesChanged)
+      .WillOnce(::testing::SaveArg<0>(&callback));
+
+  auto bluetoothDevice = std::make_unique<DBusBluetoothDevice>(mockProxy, mockPropertiesProxy);
 
   EXPECT_EQ("Test", bluetoothDevice->name());
+
+  std::map<sdbus::MemberName, sdbus::Variant> properties = {
+      std::make_pair(sdbus::MemberName{"Name"}, sdbus::Variant{"Test2"})};
+  callback(sdbus::InterfaceName{"org.bluez.Device1"}, properties, std::vector<sdbus::MemberName>{});
+  EXPECT_EQ("Test2", bluetoothDevice->name());
 }
 
 TEST(DBusBluetoothDeviceTests, shouldReturnDeviceAddressUponRequest) {
   auto mockProxy = std::make_shared<NiceMock<MockDBusDeviceProxy>>();
-  auto bluetoothDevice = std::make_unique<DBusBluetoothDevice>(mockProxy);
+  auto mockPropertiesProxy = std::make_shared<NiceMock<MockDBusPropertiesProxy>>();
+
   EXPECT_CALL(*mockProxy, address()).Times(1).WillOnce(Return("00:1A:2B:3C:4D:5E"));
+  IDBusPropertiesProxy::OnPropertiesChangedCallback callback;
+  EXPECT_CALL(*mockPropertiesProxy, subscribeToOnPropertiesChanged)
+      .WillOnce(::testing::SaveArg<0>(&callback));
+
+  auto bluetoothDevice = std::make_unique<DBusBluetoothDevice>(mockProxy, mockPropertiesProxy);
 
   EXPECT_EQ("00:1A:2B:3C:4D:5E", bluetoothDevice->address());
+
+  std::map<sdbus::MemberName, sdbus::Variant> properties = {
+      std::make_pair(sdbus::MemberName{"Address"}, sdbus::Variant{"00:1B:2C:3D:4E:5F"})};
+  callback(sdbus::InterfaceName{"org.bluez.Device1"}, properties, std::vector<sdbus::MemberName>{});
+  EXPECT_EQ("00:1B:2C:3D:4E:5F", bluetoothDevice->address());
 }
 
 TEST(DBusBluetoothDeviceTests, shouldFindCharacteristic) {
-  auto mockDeviceProxy = std::make_shared<NiceMock<MockDBusDeviceProxy>>();
-  auto bluetoothDevice = std::make_unique<DBusBluetoothDevice>(mockDeviceProxy);
+  auto mockProxy = std::make_shared<NiceMock<MockDBusDeviceProxy>>();
+  auto mockPropertiesProxy = std::make_shared<NiceMock<MockDBusPropertiesProxy>>();
+  auto bluetoothDevice = std::make_unique<DBusBluetoothDevice>(mockProxy, mockPropertiesProxy);
 
   auto mockCharacteristicProxy1 = std::make_shared<NiceMock<MockDBusCharacteristicProxy>>();
   auto mockCharacteristicProxy2 = std::make_shared<NiceMock<MockDBusCharacteristicProxy>>();
