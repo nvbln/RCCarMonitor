@@ -80,12 +80,12 @@ public:
   /**
    * @see IBluetoothDevice::name()
    */
-  std::string name() override { return mName; }
+  std::string name() const override { return mName; }
 
   /**
    * @see IBluetoothDevice::address()
    */
-  std::string address() override { return mAddress; }
+  std::string address() const override { return mAddress; }
 
   /**
    * @see IBluetoothDevice::findCharacteristic()

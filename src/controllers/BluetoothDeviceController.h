@@ -19,16 +19,17 @@ public:
    * @brief Callback to receive the selected Bluetooth device.
    * @return The Bluetooth device that the user picked.
    */
-  using Callback = std::function<void(std::shared_ptr<IBluetoothDevice>)>;
+  using Callback = std::function<void(IBluetoothDevice *)>;
 
   /**
    * @brief Creates a controller for picking a Bluetooth device.
    *
+   * Pointers are assumed to be available during the entire lifetime of the object.
+   *
    * @param bluetoothManager the interface to retrieve all available Bluetooth devices.
    * @param itemPicker the UI element that allows the user to pick a Bluetooth device.
    */
-  BluetoothDeviceController(std::shared_ptr<IBluetoothManager> bluetoothManager,
-                            std::shared_ptr<IItemPickerView> itemPicker);
+  BluetoothDeviceController(IBluetoothManager *bluetoothManager, IItemPickerView *itemPicker);
 
   /**
    * @brief Updates the available devices, also updates the view.
@@ -43,9 +44,9 @@ public:
   void subscribe(Callback callback) { event.subscribe(callback); }
 
 private:
-  std::shared_ptr<IBluetoothManager> mBluetoothManager;
-  std::shared_ptr<IItemPickerView> mItemPicker;
-  std::vector<std::shared_ptr<IBluetoothDevice>> mDevices;
+  IBluetoothManager *mBluetoothManager;
+  IItemPickerView *mItemPicker;
+  std::vector<IBluetoothDevice *> mDevices;
 
-  Event<Callback, std::shared_ptr<IBluetoothDevice>> event;
+  Event<Callback, IBluetoothDevice *> event;
 };

@@ -31,11 +31,11 @@ int main() {
   connection->enterEventLoopAsync();
 
   // TODO: Error handling
-  std::shared_ptr<IBluetoothManager> bluetoothManager;
+  std::unique_ptr<IBluetoothManager> bluetoothManager;
   try {
     auto proxy =
         std::make_shared<DBusObjectManagerProxy>(*connection, destination, std::move(objectPath));
-    bluetoothManager = std::make_shared<DBusBluetoothManager>(proxy);
+    bluetoothManager = std::make_unique<DBusBluetoothManager>(proxy);
   } catch (const sdbus::Error &e) {
     std::cerr << "Call failed: " << e.getName() << " - " << e.getMessage() << std::endl;
     return 1;
@@ -61,18 +61,16 @@ int main() {
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init();
 
-  std::unique_ptr<DriveLockController> driveLockController = nullptr;
+  std::shared_ptr<DriveLockController> driveLockController = nullptr;
   std::unique_ptr<MovementStatusController> movementStatusController = nullptr;
   std::shared_ptr<IToggleableView> toggleableView = std::make_shared<ToggleableView>(false);
   std::shared_ptr<IStatusView> statusView = std::make_shared<StatusView>();
 
-  std::shared_ptr<IGattCharacteristic> characteristic = nullptr;
-  std::shared_ptr<IBluetoothDevice> device = nullptr;
-  std::shared_ptr<ItemPickerView> itemPicker =
-      std::make_shared<ItemPickerView>(std::vector<std::string>());
+  IBluetoothDevice *device = nullptr;
+  ItemPickerView itemPicker = ItemPickerView(std::vector<std::string>());
   BluetoothDeviceController deviceController =
-      BluetoothDeviceController(bluetoothManager, itemPicker);
-  deviceController.subscribe([&](std::shared_ptr<IBluetoothDevice> pickedDevice) {
+      BluetoothDeviceController(bluetoothManager.get(), &itemPicker);
+  deviceController.subscribe([&](IBluetoothDevice *pickedDevice) {
     device = pickedDevice;
     device->connect();
   });
@@ -91,11 +89,11 @@ int main() {
     // ImGui::ShowDemoWindow();
     if (device == nullptr) { // Pick a bluetooth device.
       deviceController.update();
-      itemPicker->draw();
+      itemPicker.draw();
     } else {
       if (driveLockController == nullptr) {
         auto charHandler = std::make_shared<GattCharacteristicHandler>(device, DRIVE_LOCK_CHAR_ID);
-        driveLockController = std::make_unique<DriveLockController>(toggleableView, charHandler);
+        driveLockController = std::make_shared<DriveLockController>(toggleableView, charHandler);
       } else {
         driveLockController->update();
       }

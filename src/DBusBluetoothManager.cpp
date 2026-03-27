@@ -116,11 +116,11 @@ DBusBluetoothManager::extractDeviceAddressFromObjectPath(const sdbus::ObjectPath
   return address.substr(0, pos);
 }
 
-std::vector<std::shared_ptr<IBluetoothAdapter>> DBusBluetoothManager::getAdapters() const {
+std::vector<IBluetoothAdapter *> DBusBluetoothManager::getAdapters() const {
   return castVector<IBluetoothAdapter, DBusBluetoothAdapter>(mAdapters);
 }
 
-std::vector<std::shared_ptr<IBluetoothDevice>> DBusBluetoothManager::getDevices() const {
+std::vector<IBluetoothDevice *> DBusBluetoothManager::getDevices() const {
   return castVector<IBluetoothDevice, DBusBluetoothDevice>(mDevices);
 }
 

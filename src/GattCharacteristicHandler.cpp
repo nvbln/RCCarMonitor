@@ -5,7 +5,7 @@
 
 #include <memory>
 
-GattCharacteristicHandler::GattCharacteristicHandler(std::shared_ptr<IBluetoothDevice> device,
+GattCharacteristicHandler::GattCharacteristicHandler(IBluetoothDevice *device,
                                                      std::string characteristicId)
     : mDevice(device), mCharId(characteristicId) {
   auto result = device->findCharacteristic(characteristicId);

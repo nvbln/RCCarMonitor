@@ -7,9 +7,17 @@
 
 #include <memory>
 
+// TODO: Add documentation.
 class GattCharacteristicHandler : public IGattCharacteristicHandler {
 public:
-  GattCharacteristicHandler(std::shared_ptr<IBluetoothDevice> device, std::string characteristicId);
+  /**
+   * @brief Creates a handler for the GattCharactierstic.
+   *
+   * @param device pointer to the Bluetooth device,
+   *        assumed to be available during entire lifetime.
+   * @param characteristicId the ID that the characteristic is identified by on BLE.
+   */
+  GattCharacteristicHandler(IBluetoothDevice *device, std::string characteristicId);
 
   bool isAvailable() const override { return mChar != nullptr; }
   void onAvailable(OnAvailableCallback callback) override { onAvailableEvent.subscribe(callback); }

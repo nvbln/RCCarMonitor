@@ -35,12 +35,12 @@ public:
   /**
    * @see IBluetoothManager::getAdapters()
    */
-  std::vector<std::shared_ptr<IBluetoothAdapter>> getAdapters() const override;
+  std::vector<IBluetoothAdapter *> getAdapters() const override;
 
   /**
    * @see IBluetoothManager::getDevices()
    */
-  std::vector<std::shared_ptr<IBluetoothDevice>> getDevices() const override;
+  std::vector<IBluetoothDevice *> getDevices() const override;
 
   /**
    * @see IBluetoothManager::findDevice()
@@ -77,15 +77,14 @@ private:
    * superclass.
    */
   template <typename Base, typename Derived>
-  std::vector<std::shared_ptr<Base>>
-  castVector(const std::vector<std::shared_ptr<Derived>> input) const {
+  std::vector<Base *> castVector(const std::vector<std::shared_ptr<Derived>> input) const {
     static_assert(std::is_base_of_v<Base, Derived>, "Derived must inherit from Base");
-    std::vector<std::shared_ptr<Base>> output;
-    output.reserve(input.size());
+    std::vector<Base *> output;
+    output.reserve(input.size()); // TODO: This should be changed right?
 
     std::ranges::transform(
         input, std::back_inserter(output),
-        [](const std::shared_ptr<Derived> &ptr) { return std::static_pointer_cast<Base>(ptr); });
+        [](const std::shared_ptr<Derived> &ptr) { return static_cast<Base *>(ptr.get()); });
 
     return output;
   }

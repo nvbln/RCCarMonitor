@@ -24,29 +24,31 @@ public:
 
 class MockBluetoothManager : public IBluetoothManager {
 public:
-  MOCK_METHOD(std::vector<std::shared_ptr<IBluetoothAdapter>>, getAdapters, (), (const, override));
-  MOCK_METHOD(std::vector<std::shared_ptr<IBluetoothDevice>>, getDevices, (), (const, override));
+  MOCK_METHOD(std::vector<IBluetoothAdapter *>, getAdapters, (), (const, override));
+  MOCK_METHOD(std::vector<IBluetoothDevice *>, getDevices, (), (const, override));
   MOCK_METHOD(std::optional<std::shared_ptr<IBluetoothDevice>>, findDevice,
               (std::string deviceName), (const, override));
 };
 
 TEST(BluetoothDeviceControllerTests, whenItemSelectedInViewCallCallback) {
-  auto mockItemPicker = std::make_shared<NiceMock<MockItemPickerView>>();
+  // auto mockItemPicker = NiceMock<MockItemPickerView>();
+  NiceMock<MockItemPickerView> mockItemPicker;
   IItemPickerView::Callback callback;
-  ON_CALL(*mockItemPicker, subscribe).WillByDefault([&](IItemPickerView::Callback cb) {
+  ON_CALL(mockItemPicker, subscribe).WillByDefault([&](IItemPickerView::Callback cb) {
     callback = cb;
   });
 
-  auto mockBluetoothDevice = std::make_shared<NiceMock<MockBluetoothDevice>>();
-  ON_CALL(*mockBluetoothDevice, name).WillByDefault(Return("TestDevice"));
+  // auto mockBluetoothDevice = NiceMock<MockBluetoothDevice>();
+  NiceMock<MockBluetoothDevice> mockBluetoothDevice;
+  ON_CALL(mockBluetoothDevice, name).WillByDefault(Return("TestDevice"));
 
-  auto mockBluetoothManager = std::make_shared<NiceMock<MockBluetoothManager>>();
-  auto mockDevices = std::vector<std::shared_ptr<IBluetoothDevice>>{mockBluetoothDevice};
-  ON_CALL(*mockBluetoothManager, getDevices).WillByDefault(Return(mockDevices));
+  auto mockBluetoothManager = NiceMock<MockBluetoothManager>();
+  auto mockDevices = std::vector<IBluetoothDevice *>{&mockBluetoothDevice};
+  ON_CALL(mockBluetoothManager, getDevices).WillByDefault(Return(mockDevices));
 
-  auto controller = BluetoothDeviceController(mockBluetoothManager, mockItemPicker);
-  controller.subscribe([mockBluetoothDevice](std::shared_ptr<IBluetoothDevice> device) {
-    EXPECT_EQ(mockBluetoothDevice, device);
+  auto controller = BluetoothDeviceController(&mockBluetoothManager, &mockItemPicker);
+  controller.subscribe([&mockBluetoothDevice](IBluetoothDevice *device) {
+    EXPECT_EQ(&mockBluetoothDevice, device);
   });
 
   callback(0);

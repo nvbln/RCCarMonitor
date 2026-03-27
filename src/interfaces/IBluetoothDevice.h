@@ -45,7 +45,7 @@ public:
    *
    * @return The name of the device
    */
-  virtual std::string name() = 0;
+  virtual std::string name() const = 0;
 
   /**
    * @brief Returns the hexadecimal address of the device.
@@ -54,7 +54,7 @@ public:
    * device itself not the path leading to the device.
    * @return The hexadecimal address of the device.
    */
-  virtual std::string address() = 0;
+  virtual std::string address() const = 0;
 
   /**
    * @brief returns the GATT Characteristic matched by the name, if any
