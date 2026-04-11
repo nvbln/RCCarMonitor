@@ -24,8 +24,8 @@ public:
 
 class MockBluetoothManager : public IBluetoothManager {
 public:
-  MOCK_METHOD(std::vector<IBluetoothAdapter *>, getAdapters, (), (const, override));
-  MOCK_METHOD(std::vector<IBluetoothDevice *>, getDevices, (), (const, override));
+  MOCK_METHOD(std::vector<IBluetoothAdapter*>, getAdapters, (), (const, override));
+  MOCK_METHOD(std::vector<IBluetoothDevice*>, getDevices, (), (const, override));
   MOCK_METHOD(std::optional<std::shared_ptr<IBluetoothDevice>>, findDevice,
               (std::string deviceName), (const, override));
 };
@@ -43,11 +43,11 @@ TEST(BluetoothDeviceControllerTests, whenItemSelectedInViewCallCallback) {
   ON_CALL(mockBluetoothDevice, name).WillByDefault(Return("TestDevice"));
 
   auto mockBluetoothManager = NiceMock<MockBluetoothManager>();
-  auto mockDevices = std::vector<IBluetoothDevice *>{&mockBluetoothDevice};
+  auto mockDevices = std::vector<IBluetoothDevice*>{&mockBluetoothDevice};
   ON_CALL(mockBluetoothManager, getDevices).WillByDefault(Return(mockDevices));
 
   auto controller = BluetoothDeviceController(&mockBluetoothManager, &mockItemPicker);
-  controller.subscribe([&mockBluetoothDevice](IBluetoothDevice *device) {
+  controller.subscribe([&mockBluetoothDevice](IBluetoothDevice* device) {
     EXPECT_EQ(&mockBluetoothDevice, device);
   });
 

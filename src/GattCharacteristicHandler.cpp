@@ -5,7 +5,7 @@
 
 #include <memory>
 
-GattCharacteristicHandler::GattCharacteristicHandler(IBluetoothDevice *device,
+GattCharacteristicHandler::GattCharacteristicHandler(IBluetoothDevice* device,
                                                      std::string characteristicId)
     : mDevice(device), mCharId(characteristicId) {
   auto result = device->findCharacteristic(characteristicId);
@@ -38,7 +38,7 @@ std::optional<std::vector<uint8_t>> GattCharacteristicHandler::read() {
   return std::nullopt;
 }
 
-bool GattCharacteristicHandler::write(const std::vector<uint8_t> &data) {
+bool GattCharacteristicHandler::write(const std::vector<uint8_t>& data) {
   if (mChar != nullptr) {
     mChar->write(data);
     return true;

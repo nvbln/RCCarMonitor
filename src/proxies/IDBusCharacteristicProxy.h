@@ -40,5 +40,5 @@ public:
    *
    * @param the byte vector to write to the characteristic.
    */
-  virtual void write(const std::vector<uint8_t> &value) = 0;
+  virtual void write(const std::vector<uint8_t>& value) = 0;
 };

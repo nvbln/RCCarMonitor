@@ -58,5 +58,5 @@ public:
    * @param data The data to be written to the characteristic.
    * @return whether the writing operation was successful.
    */
-  virtual bool write(const std::vector<uint8_t> &data) = 0;
+  virtual bool write(const std::vector<uint8_t>& data) = 0;
 };

@@ -18,9 +18,9 @@
 #include "imgui.h"
 #include <GLFW/glfw3.h>
 
-static constexpr const char *DRIVE_LOCK_CHAR_ID = "19B10001-E8F2-537E-4F6C-D104768A1214";
-static constexpr const char *MOVEMENT_STATUS_ID = "A92E318E-9EC4-4DB5-A861-7D0B6B77A2A1";
-static constexpr const char *ULTRASOUND_CHAR_ID = "16B31004-5930-47DF-82EE-A24F976AA56D";
+static constexpr const char* DRIVE_LOCK_CHAR_ID = "19B10001-E8F2-537E-4F6C-D104768A1214";
+static constexpr const char* MOVEMENT_STATUS_ID = "A92E318E-9EC4-4DB5-A861-7D0B6B77A2A1";
+static constexpr const char* ULTRASOUND_CHAR_ID = "16B31004-5930-47DF-82EE-A24F976AA56D";
 
 int main() {
   // Create a proxy for the BlueZ ObjectManager.
@@ -36,7 +36,7 @@ int main() {
     auto proxy =
         std::make_shared<DBusObjectManagerProxy>(*connection, destination, std::move(objectPath));
     bluetoothManager = std::make_unique<DBusBluetoothManager>(proxy);
-  } catch (const sdbus::Error &e) {
+  } catch (const sdbus::Error& e) {
     std::cerr << "Call failed: " << e.getName() << " - " << e.getMessage() << std::endl;
     return 1;
   }
@@ -49,7 +49,7 @@ int main() {
 
   // Set up the GUI
   glfwInit();
-  GLFWwindow *window = glfwCreateWindow(500, 400, "MyApp", nullptr, nullptr);
+  GLFWwindow* window = glfwCreateWindow(500, 400, "MyApp", nullptr, nullptr);
   glfwMakeContextCurrent(window);
 
   IMGUI_CHECKVERSION();
@@ -66,11 +66,11 @@ int main() {
   std::shared_ptr<IToggleableView> toggleableView = std::make_shared<ToggleableView>(false);
   std::shared_ptr<IStatusView> statusView = std::make_shared<StatusView>();
 
-  IBluetoothDevice *device = nullptr;
+  IBluetoothDevice* device = nullptr;
   ItemPickerView itemPicker = ItemPickerView(std::vector<std::string>());
   BluetoothDeviceController deviceController =
       BluetoothDeviceController(bluetoothManager.get(), &itemPicker);
-  deviceController.subscribe([&](IBluetoothDevice *pickedDevice) {
+  deviceController.subscribe([&](IBluetoothDevice* pickedDevice) {
     device = pickedDevice;
     device->connect();
   });

@@ -36,5 +36,5 @@ public:
    * Writes the given value to the Characteristic on the
    * peripheral. The value is encoded as a byte array.
    */
-  virtual void write(const std::vector<uint8_t> &value) = 0;
+  virtual void write(const std::vector<uint8_t>& value) = 0;
 };

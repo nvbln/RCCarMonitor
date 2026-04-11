@@ -21,9 +21,9 @@ public:
    * The callback is triggered every time a property changes.
    */
   using OnPropertiesChangedCallback =
-      std::function<void(const sdbus::InterfaceName &interface,
-                         const std::map<sdbus::MemberName, sdbus::Variant> &changedProperties,
-                         const std::vector<sdbus::MemberName> &invalidatedProperties)>;
+      std::function<void(const sdbus::InterfaceName& interface,
+                         const std::map<sdbus::MemberName, sdbus::Variant>& changedProperties,
+                         const std::vector<sdbus::MemberName>& invalidatedProperties)>;
 
   /**
    * @brief subscribes the callback to updates on changed/invalidated properties.

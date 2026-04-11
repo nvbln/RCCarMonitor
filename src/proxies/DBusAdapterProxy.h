@@ -21,7 +21,7 @@ public:
    * @param destination The bus name of the service to communicate with.
    * @param path The path to the adapter that should be represented by this object.
    */
-  DBusAdapterProxy(sdbus::IConnection &connection, sdbus::ServiceName destination,
+  DBusAdapterProxy(sdbus::IConnection& connection, sdbus::ServiceName destination,
                    sdbus::ObjectPath path)
       : ProxyInterfaces(connection, destination, std::move(path)), mConnection(connection),
         mDestination(destination) {
@@ -41,6 +41,6 @@ public:
   void stopDiscovery() override { StopDiscovery(); }
 
 private:
-  sdbus::IConnection &mConnection;
+  sdbus::IConnection& mConnection;
   sdbus::ServiceName mDestination;
 };

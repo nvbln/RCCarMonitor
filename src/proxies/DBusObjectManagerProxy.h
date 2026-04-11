@@ -34,7 +34,7 @@ public:
    * @param destination The bus name of the service to communicate with.
    * @param path The path to the root of the DBus Bluetooth component.
    */
-  DBusObjectManagerProxy(sdbus::IConnection &connection, sdbus::ServiceName destination,
+  DBusObjectManagerProxy(sdbus::IConnection& connection, sdbus::ServiceName destination,
                          sdbus::ObjectPath path)
       : ProxyInterfaces(connection, destination, std::move(path)), mConnection(connection),
         mDestination(destination) {
@@ -97,21 +97,21 @@ public:
   }
 
 private:
-  sdbus::IConnection &mConnection;
+  sdbus::IConnection& mConnection;
   sdbus::ServiceName mDestination;
 
   std::vector<OnInterfacesAddedCallback> mOnAddedCallbacks;
   std::vector<OnInterfacesRemovedCallback> mOnRemovedCallbacks;
 
-  void onInterfacesAdded(const sdbus::ObjectPath &objectPath,
-                         const InterfacesAndPropertiesMap &interfacesAndProperties) override {
+  void onInterfacesAdded(const sdbus::ObjectPath& objectPath,
+                         const InterfacesAndPropertiesMap& interfacesAndProperties) override {
     for (auto callback : mOnAddedCallbacks) {
       callback(objectPath, interfacesAndProperties);
     }
   }
 
-  void onInterfacesRemoved(const sdbus::ObjectPath &objectPath,
-                           const std::vector<sdbus::InterfaceName> &interfaces) override {
+  void onInterfacesRemoved(const sdbus::ObjectPath& objectPath,
+                           const std::vector<sdbus::InterfaceName>& interfaces) override {
     for (auto callback : mOnRemovedCallbacks) {
       callback(objectPath, interfaces);
     }

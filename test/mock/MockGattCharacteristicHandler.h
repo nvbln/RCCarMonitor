@@ -9,5 +9,5 @@ public:
   MOCK_METHOD(void, onAvailable, (OnAvailableCallback), (override));
   MOCK_METHOD(void, onUnavailable, (OnUnavailableCallback), (override));
   MOCK_METHOD(std::optional<std::vector<uint8_t>>, read, (), (override));
-  MOCK_METHOD(bool, write, (const std::vector<uint8_t> &), (override));
+  MOCK_METHOD(bool, write, (const std::vector<uint8_t>&), (override));
 };

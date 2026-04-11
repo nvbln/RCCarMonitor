@@ -35,12 +35,12 @@ public:
   /**
    * @see IBluetoothManager::getAdapters()
    */
-  std::vector<IBluetoothAdapter *> getAdapters() const override;
+  std::vector<IBluetoothAdapter*> getAdapters() const override;
 
   /**
    * @see IBluetoothManager::getDevices()
    */
-  std::vector<IBluetoothDevice *> getDevices() const override;
+  std::vector<IBluetoothDevice*> getDevices() const override;
 
   /**
    * @see IBluetoothManager::findDevice()
@@ -55,13 +55,13 @@ private:
 
   void handleExistingObjects();
 
-  void onInterfacesAdded(const sdbus::ObjectPath &objectPath,
-                         const InterfacesAndPropertiesMap &interfacesAndProperties);
+  void onInterfacesAdded(const sdbus::ObjectPath& objectPath,
+                         const InterfacesAndPropertiesMap& interfacesAndProperties);
 
-  void onInterfacesRemoved(const sdbus::ObjectPath &objectPath,
-                           const std::vector<sdbus::InterfaceName> &interfaces);
+  void onInterfacesRemoved(const sdbus::ObjectPath& objectPath,
+                           const std::vector<sdbus::InterfaceName>& interfaces);
 
-  static std::string extractDeviceAddressFromObjectPath(const sdbus::ObjectPath &objectPath);
+  static std::string extractDeviceAddressFromObjectPath(const sdbus::ObjectPath& objectPath);
 
   std::optional<std::shared_ptr<DBusBluetoothDevice>>
   findDBusDevice(std::string deviceValue, std::string property = "name") const;
@@ -77,14 +77,14 @@ private:
    * superclass.
    */
   template <typename Base, typename Derived>
-  std::vector<Base *> castVector(const std::vector<std::shared_ptr<Derived>> input) const {
+  std::vector<Base*> castVector(const std::vector<std::shared_ptr<Derived>> input) const {
     static_assert(std::is_base_of_v<Base, Derived>, "Derived must inherit from Base");
-    std::vector<Base *> output;
+    std::vector<Base*> output;
     output.reserve(input.size()); // TODO: This should be changed right?
 
     std::ranges::transform(
         input, std::back_inserter(output),
-        [](const std::shared_ptr<Derived> &ptr) { return static_cast<Base *>(ptr.get()); });
+        [](const std::shared_ptr<Derived>& ptr) { return static_cast<Base*>(ptr.get()); });
 
     return output;
   }

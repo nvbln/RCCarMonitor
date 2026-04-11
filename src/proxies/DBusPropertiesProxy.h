@@ -23,7 +23,7 @@ public:
    * @param destination The bus name of the service to communicate with.
    * @param path The path to the root of the DBus Bluetooth object.
    */
-  DBusPropertiesProxy(sdbus::IConnection &connection, sdbus::ServiceName destination,
+  DBusPropertiesProxy(sdbus::IConnection& connection, sdbus::ServiceName destination,
                       sdbus::ObjectPath path)
       : ProxyInterfaces(connection, destination, std::move(path)), mConnection(connection),
         mDestination(destination) {
@@ -40,14 +40,14 @@ public:
   }
 
 private:
-  sdbus::IConnection &mConnection;
+  sdbus::IConnection& mConnection;
   sdbus::ServiceName mDestination;
 
   std::vector<OnPropertiesChangedCallback> mOnPropertiesChangedCallbacks;
 
-  void onPropertiesChanged(const sdbus::InterfaceName &interface,
-                           const std::map<sdbus::MemberName, sdbus::Variant> &changedProperties,
-                           const std::vector<sdbus::MemberName> &invalidatedProperties) override {
+  void onPropertiesChanged(const sdbus::InterfaceName& interface,
+                           const std::map<sdbus::MemberName, sdbus::Variant>& changedProperties,
+                           const std::vector<sdbus::MemberName>& invalidatedProperties) override {
     for (auto callback : mOnPropertiesChangedCallbacks) {
       callback(interface, changedProperties, invalidatedProperties);
     }

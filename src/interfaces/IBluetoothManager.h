@@ -28,7 +28,7 @@ public:
    * the form of IBluetoothAdapter.
    * @return a vector of pointers to the found Bluetooth adapters.
    */
-  virtual std::vector<IBluetoothAdapter *> getAdapters() const = 0;
+  virtual std::vector<IBluetoothAdapter*> getAdapters() const = 0;
 
   /**
    * @brief returns the Bluetooth devices found by the component.
@@ -39,7 +39,7 @@ public:
    * the form of IBluetoothDevice.
    * @return a vector of pointers to the found Bluetooth devices.
    */
-  virtual std::vector<IBluetoothDevice *> getDevices() const = 0;
+  virtual std::vector<IBluetoothDevice*> getDevices() const = 0;
 
   /**
    * @brief returns the device matched by the name, if any

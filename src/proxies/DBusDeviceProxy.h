@@ -23,7 +23,7 @@ public:
    * @param destination The bus name of the service to communicate with.
    * @param path The path to the device that this instance should represent.
    */
-  DBusDeviceProxy(sdbus::IConnection &connection, sdbus::ServiceName destination,
+  DBusDeviceProxy(sdbus::IConnection& connection, sdbus::ServiceName destination,
                   sdbus::ObjectPath path)
       : ProxyInterfaces(connection, destination, std::move(path)) {
     registerProxy();

@@ -25,7 +25,7 @@ public:
    *        assumed to be available during entire lifetime.
    * @param characteristicId the ID that the characteristic is identified by on BLE.
    */
-  GattCharacteristicHandler(IBluetoothDevice *device, std::string characteristicId);
+  GattCharacteristicHandler(IBluetoothDevice* device, std::string characteristicId);
 
   /**
    * @see IGattCharacteristicHandler::isAvailable()
@@ -52,10 +52,10 @@ public:
   /**
    * @see IGattCharacteristicHandler::write()
    */
-  bool write(const std::vector<uint8_t> &data) override;
+  bool write(const std::vector<uint8_t>& data) override;
 
 private:
-  IBluetoothDevice *mDevice;
+  IBluetoothDevice* mDevice;
   std::shared_ptr<IGattCharacteristic> mChar = nullptr;
   std::string mCharId;
 

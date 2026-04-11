@@ -43,7 +43,7 @@ public:
   /**
    * @see IGattCharacteristic::write()
    */
-  void write(const std::vector<uint8_t> &value) override { return mProxy->write(value); }
+  void write(const std::vector<uint8_t>& value) override { return mProxy->write(value); }
 
 private:
   std::shared_ptr<IDBusCharacteristicProxy> mProxy;

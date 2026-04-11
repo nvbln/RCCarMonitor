@@ -16,7 +16,7 @@ public:
    * @param destination The bus name of the service to communicate with.
    * @param path The path to the Characteristic that this instance should represent.
    */
-  DBusCharacteristicProxy(sdbus::IConnection &connection, sdbus::ServiceName destination,
+  DBusCharacteristicProxy(sdbus::IConnection& connection, sdbus::ServiceName destination,
                           sdbus::ObjectPath path)
       : ProxyInterfaces(connection, destination, path), mObjectPath(path) {
     registerProxy();
@@ -42,7 +42,7 @@ public:
   /**
    * @see IDBusCharacteristicProxy::write()
    */
-  void write(const std::vector<uint8_t> &value) override { return WriteValue(value, {}); }
+  void write(const std::vector<uint8_t>& value) override { return WriteValue(value, {}); }
 
 private:
   sdbus::ObjectPath mObjectPath;

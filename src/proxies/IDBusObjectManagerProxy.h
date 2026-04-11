@@ -25,8 +25,8 @@ public:
    * The callback is triggered every time an interface is added.
    */
   using OnInterfacesAddedCallback =
-      std::function<void(const sdbus::ObjectPath &objectPath,
-                         const InterfacesAndPropertiesMap &interfacesAndProperties)>;
+      std::function<void(const sdbus::ObjectPath& objectPath,
+                         const InterfacesAndPropertiesMap& interfacesAndProperties)>;
 
   /**
    * A callback such that the application DBus implementation is updated on
@@ -35,7 +35,7 @@ public:
    * The callback is triggered every time an interface is removed.
    */
   using OnInterfacesRemovedCallback = std::function<void(
-      const sdbus::ObjectPath &objectPath, const std::vector<sdbus::InterfaceName> &interfaces)>;
+      const sdbus::ObjectPath& objectPath, const std::vector<sdbus::InterfaceName>& interfaces)>;
 
   /**
    * @brief subscribes the callback to updates on added interfaces.

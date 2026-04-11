@@ -28,7 +28,7 @@ DBusBluetoothDevice::findCharacteristic(std::string uuid) {
 std::optional<std::shared_ptr<DBusGattCharacteristic>>
 DBusBluetoothDevice::findDBusCharacteristic(std::string value, std::string property) {
   auto iterator = std::find_if(
-      mCharacteristics.begin(), mCharacteristics.end(), [&](const auto &characteristic) {
+      mCharacteristics.begin(), mCharacteristics.end(), [&](const auto& characteristic) {
         if (property == "uuid") {
           std::ranges::transform(value, value.begin(),
                                  [](unsigned char c) { return std::tolower(c); });
@@ -46,13 +46,13 @@ DBusBluetoothDevice::findDBusCharacteristic(std::string value, std::string prope
 }
 
 void DBusBluetoothDevice::onPropertiesChanged(
-    const sdbus::InterfaceName &interface,
-    const std::map<sdbus::MemberName, sdbus::Variant> &changedProperties,
-    const std::vector<sdbus::MemberName> &invalidatedProperties) {
+    const sdbus::InterfaceName& interface,
+    const std::map<sdbus::MemberName, sdbus::Variant>& changedProperties,
+    const std::vector<sdbus::MemberName>& invalidatedProperties) {
 
   // Sanity check such that only property changes for the device are processed.
   if (interface == "org.bluez.Device1") {
-    for (const auto &[name, value] : changedProperties) {
+    for (const auto& [name, value] : changedProperties) {
       if (name == "Name") {
         mName = value.get<std::string>();
       } else if (name == "Address") {

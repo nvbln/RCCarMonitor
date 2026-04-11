@@ -32,9 +32,9 @@ public:
       : mProxy(proxy), mPropertiesProxy(propertiesProxy), mName(proxy->name()),
         mAddress(proxy->address()) {
     propertiesProxy->subscribeToOnPropertiesChanged(
-        [this](const sdbus::InterfaceName &interface,
-               const std::map<sdbus::MemberName, sdbus::Variant> &changedProperties,
-               const std::vector<sdbus::MemberName> &invalidatedProperties) {
+        [this](const sdbus::InterfaceName& interface,
+               const std::map<sdbus::MemberName, sdbus::Variant>& changedProperties,
+               const std::vector<sdbus::MemberName>& invalidatedProperties) {
           this->onPropertiesChanged(interface, changedProperties, invalidatedProperties);
         });
   }
@@ -118,7 +118,7 @@ private:
    * @param changedProperties The new values of the properties that were changed.
    * @param invalidatedProperties The properaties that have been invalidated.
    */
-  void onPropertiesChanged(const sdbus::InterfaceName &interface,
-                           const std::map<sdbus::MemberName, sdbus::Variant> &changedProperties,
-                           const std::vector<sdbus::MemberName> &invalidatedProperties);
+  void onPropertiesChanged(const sdbus::InterfaceName& interface,
+                           const std::map<sdbus::MemberName, sdbus::Variant>& changedProperties,
+                           const std::vector<sdbus::MemberName>& invalidatedProperties);
 };

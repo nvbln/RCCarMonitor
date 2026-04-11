@@ -19,7 +19,7 @@ public:
    * @brief Callback to receive the selected Bluetooth device.
    * @return The Bluetooth device that the user picked.
    */
-  using Callback = std::function<void(IBluetoothDevice *)>;
+  using Callback = std::function<void(IBluetoothDevice*)>;
 
   /**
    * @brief Creates a controller for picking a Bluetooth device.
@@ -29,7 +29,7 @@ public:
    * @param bluetoothManager the interface to retrieve all available Bluetooth devices.
    * @param itemPicker the UI element that allows the user to pick a Bluetooth device.
    */
-  BluetoothDeviceController(IBluetoothManager *bluetoothManager, IItemPickerView *itemPicker);
+  BluetoothDeviceController(IBluetoothManager* bluetoothManager, IItemPickerView* itemPicker);
 
   /**
    * @brief Updates the available devices, also updates the view.
@@ -44,9 +44,9 @@ public:
   void subscribe(Callback callback) { event.subscribe(callback); }
 
 private:
-  IBluetoothManager *mBluetoothManager;
-  IItemPickerView *mItemPicker;
-  std::vector<IBluetoothDevice *> mDevices;
+  IBluetoothManager* mBluetoothManager;
+  IItemPickerView* mItemPicker;
+  std::vector<IBluetoothDevice*> mDevices;
 
-  Event<Callback, IBluetoothDevice *> event;
+  Event<Callback, IBluetoothDevice*> event;
 };

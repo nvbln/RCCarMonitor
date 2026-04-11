@@ -10,14 +10,14 @@ using InterfacesAndPropertiesMap = IDBusObjectManagerProxy::InterfacesAndPropert
 DBusBluetoothManager::DBusBluetoothManager(std::shared_ptr<IDBusObjectManagerProxy> proxy)
     : mProxy(proxy) {
   proxy->addOnInterfacesAddedCallback(
-      [this](const sdbus::ObjectPath &objectPath,
-             const InterfacesAndPropertiesMap &interfacesAndProperties) {
+      [this](const sdbus::ObjectPath& objectPath,
+             const InterfacesAndPropertiesMap& interfacesAndProperties) {
         this->onInterfacesAdded(objectPath, interfacesAndProperties);
       });
 
   proxy->addOnInterfacesRemovedCallback(
-      [this](const sdbus::ObjectPath &objectPath,
-             const std::vector<sdbus::InterfaceName> &interfaces) {
+      [this](const sdbus::ObjectPath& objectPath,
+             const std::vector<sdbus::InterfaceName>& interfaces) {
         this->onInterfacesRemoved(objectPath, interfaces);
       });
 
@@ -26,17 +26,17 @@ DBusBluetoothManager::DBusBluetoothManager(std::shared_ptr<IDBusObjectManagerPro
 
 void DBusBluetoothManager::handleExistingObjects() {
   auto managedObjects = mProxy->managedObjects();
-  for (const auto &[objectPath, interfacesAndPropertiesMap] : managedObjects) {
+  for (const auto& [objectPath, interfacesAndPropertiesMap] : managedObjects) {
     onInterfacesAdded(objectPath, interfacesAndPropertiesMap);
   }
 }
 
 void DBusBluetoothManager::onInterfacesAdded(
-    const sdbus::ObjectPath &objectPath,
-    const InterfacesAndPropertiesMap &interfacesAndProperties) {
+    const sdbus::ObjectPath& objectPath,
+    const InterfacesAndPropertiesMap& interfacesAndProperties) {
 
   // Filter on Bluetooth devices.
-  for (const auto &[interface, properties] : interfacesAndProperties) {
+  for (const auto& [interface, properties] : interfacesAndProperties) {
     if (interface == "org.bluez.Adapter1") {
       mAdapters.push_back(
           std::make_shared<DBusBluetoothAdapter>(mProxy->createAdapter(objectPath)));
@@ -69,9 +69,9 @@ void DBusBluetoothManager::onInterfacesAdded(
 }
 
 void DBusBluetoothManager::onInterfacesRemoved(
-    const sdbus::ObjectPath &objectPath, const std::vector<sdbus::InterfaceName> &interfaces) {
+    const sdbus::ObjectPath& objectPath, const std::vector<sdbus::InterfaceName>& interfaces) {
   std::cout << "removed: " << objectPath << std::endl;
-  for (const auto &interface : interfaces) {
+  for (const auto& interface : interfaces) {
     // Extract device address
     std::string address = this->extractDeviceAddressFromObjectPath(objectPath);
     auto devicePtr = findDBusDevice(address, "address");
@@ -97,7 +97,7 @@ void DBusBluetoothManager::onInterfacesRemoved(
 }
 
 std::string
-DBusBluetoothManager::extractDeviceAddressFromObjectPath(const sdbus::ObjectPath &objectPath) {
+DBusBluetoothManager::extractDeviceAddressFromObjectPath(const sdbus::ObjectPath& objectPath) {
   const std::string prefix = "dev_";
   size_t pos = objectPath.find(prefix);
   if (pos == std::string::npos) {
@@ -116,11 +116,11 @@ DBusBluetoothManager::extractDeviceAddressFromObjectPath(const sdbus::ObjectPath
   return address.substr(0, pos);
 }
 
-std::vector<IBluetoothAdapter *> DBusBluetoothManager::getAdapters() const {
+std::vector<IBluetoothAdapter*> DBusBluetoothManager::getAdapters() const {
   return castVector<IBluetoothAdapter, DBusBluetoothAdapter>(mAdapters);
 }
 
-std::vector<IBluetoothDevice *> DBusBluetoothManager::getDevices() const {
+std::vector<IBluetoothDevice*> DBusBluetoothManager::getDevices() const {
   return castVector<IBluetoothDevice, DBusBluetoothDevice>(mDevices);
 }
 
@@ -136,7 +136,7 @@ DBusBluetoothManager::findDevice(std::string deviceName) const {
 
 std::optional<std::shared_ptr<DBusBluetoothDevice>>
 DBusBluetoothManager::findDBusDevice(std::string value, std::string property) const {
-  auto iterator = std::find_if(mDevices.begin(), mDevices.end(), [&](const auto &device) {
+  auto iterator = std::find_if(mDevices.begin(), mDevices.end(), [&](const auto& device) {
     std::string deviceValue;
     if (property == "name") {
       deviceValue = device->name();
