@@ -16,20 +16,20 @@ public:
 };
 
 TEST(MovementStatusControllerTests, whenStatusIsUpdatedUpdateView) {
-  auto mockHandler = std::make_shared<NiceMock<MockGattCharacteristicHandler>>();
+  auto mockHandler = NiceMock<MockGattCharacteristicHandler>();
 
   // Check if it can display different statuses (0 and 1) and an incorrect one (-1).
-  EXPECT_CALL(*mockHandler, read)
+  EXPECT_CALL(mockHandler, read)
       .WillOnce(Return(std::vector<uint8_t>{0}))
       .WillOnce(Return(std::vector<uint8_t>{1}))
       .WillOnce(Return(std::vector<uint8_t>{250}));
 
-  auto mockStatusView = std::make_shared<NiceMock<MockStatusView>>();
-  EXPECT_CALL(*mockStatusView, update("Forwards"));
-  EXPECT_CALL(*mockStatusView, update("Backwards"));
-  EXPECT_CALL(*mockStatusView, update("Unknown"));
+  auto mockStatusView = NiceMock<MockStatusView>();
+  EXPECT_CALL(mockStatusView, update("Forwards"));
+  EXPECT_CALL(mockStatusView, update("Backwards"));
+  EXPECT_CALL(mockStatusView, update("Unknown"));
 
-  MovementStatusController controller = MovementStatusController(mockStatusView, mockHandler);
+  MovementStatusController controller = MovementStatusController(&mockStatusView, &mockHandler);
 
   controller.update();
   controller.update();

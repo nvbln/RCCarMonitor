@@ -3,8 +3,6 @@
 #include "interfaces/IGattCharacteristicHandler.h"
 #include "views/IToggleableView.h"
 
-#include <memory>
-
 /**
  * @class DriveLockController
  * @brief Handles the drive lock on the vehicle.
@@ -23,8 +21,7 @@ public:
    * @param device The RC Car, should contain a drive lock characteristic.
    * @param toggleable a UI element that allows for toggling the setting.
    */
-  DriveLockController(std::shared_ptr<IToggleableView> toggleable,
-                      std::shared_ptr<IGattCharacteristicHandler> handler);
+  DriveLockController(IToggleableView* toggleable, IGattCharacteristicHandler* handler);
 
   /**
    * @brief Updates the view with the most recent setting.
@@ -32,8 +29,8 @@ public:
   void update();
 
 private:
-  std::shared_ptr<IToggleableView> mToggleable;
-  std::shared_ptr<IGattCharacteristicHandler> mHandler;
+  IToggleableView* mToggleable;
+  IGattCharacteristicHandler* mHandler;
 
   /**
    * @brief Writes the user set toggle value to the device.

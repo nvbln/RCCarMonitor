@@ -5,8 +5,6 @@
 #include "interfaces/IGattCharacteristicHandler.h"
 #include "views/IStatusView.h"
 
-#include <memory>
-
 /**
  * @brief Describes the type of movement that the vehicle is executing.
  *
@@ -27,8 +25,7 @@ public:
    * @param device The RC Car, should contain a movement status characteristic.
    * @param statusView The view that the movement status should be displayed in.
    */
-  MovementStatusController(std::shared_ptr<IStatusView> statusView,
-                           std::shared_ptr<IGattCharacteristicHandler> handler)
+  MovementStatusController(IStatusView* statusView, IGattCharacteristicHandler* handler)
       : mView(statusView), mHandler(handler) {
     update();
   }
@@ -36,6 +33,6 @@ public:
   void update();
 
 private:
-  std::shared_ptr<IStatusView> mView;
-  std::shared_ptr<IGattCharacteristicHandler> mHandler;
+  IStatusView* mView;
+  IGattCharacteristicHandler* mHandler;
 };

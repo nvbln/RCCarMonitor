@@ -61,10 +61,13 @@ int main() {
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init();
 
-  std::shared_ptr<DriveLockController> driveLockController = nullptr;
+  std::unique_ptr<DriveLockController> driveLockController = nullptr;
+  std::unique_ptr<IToggleableView> toggleableView = std::make_unique<ToggleableView>(false);
+  std::unique_ptr<IGattCharacteristicHandler> driveLockCharHandler = nullptr;
+
   std::unique_ptr<MovementStatusController> movementStatusController = nullptr;
-  std::shared_ptr<IToggleableView> toggleableView = std::make_shared<ToggleableView>(false);
-  std::shared_ptr<IStatusView> statusView = std::make_shared<StatusView>();
+  std::unique_ptr<IStatusView> statusView = std::make_unique<StatusView>();
+  std::unique_ptr<IGattCharacteristicHandler> movementStatusCharHandler = nullptr;
 
   IBluetoothDevice* device = nullptr;
   ItemPickerView itemPicker = ItemPickerView(std::vector<std::string>());
@@ -92,16 +95,19 @@ int main() {
       itemPicker.draw();
     } else {
       if (driveLockController == nullptr) {
-        auto charHandler = std::make_shared<GattCharacteristicHandler>(device, DRIVE_LOCK_CHAR_ID);
-        driveLockController = std::make_shared<DriveLockController>(toggleableView, charHandler);
+        driveLockCharHandler =
+            std::make_unique<GattCharacteristicHandler>(device, DRIVE_LOCK_CHAR_ID);
+        driveLockController =
+            std::make_unique<DriveLockController>(toggleableView.get(), driveLockCharHandler.get());
       } else {
         driveLockController->update();
       }
 
       if (movementStatusController == nullptr) {
-        auto charHandler = std::make_shared<GattCharacteristicHandler>(device, MOVEMENT_STATUS_ID);
-        movementStatusController =
-            std::make_unique<MovementStatusController>(statusView, charHandler);
+        movementStatusCharHandler =
+            std::make_unique<GattCharacteristicHandler>(device, MOVEMENT_STATUS_ID);
+        movementStatusController = std::make_unique<MovementStatusController>(
+            statusView.get(), movementStatusCharHandler.get());
       } else {
         movementStatusController->update();
       }

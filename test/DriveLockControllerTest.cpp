@@ -24,17 +24,17 @@ public:
 };
 
 TEST(DriveLockControllerTests, whenButtonClickedInViewWriteToChar) {
-  auto mockHandler = std::make_shared<NiceMock<MockGattCharacteristicHandler>>();
-  EXPECT_CALL(*mockHandler, write(BytesTrue));
-  EXPECT_CALL(*mockHandler, write(BytesFalse));
+  auto mockHandler = NiceMock<MockGattCharacteristicHandler>();
+  EXPECT_CALL(mockHandler, write(BytesTrue));
+  EXPECT_CALL(mockHandler, write(BytesFalse));
 
-  auto mockToggleable = std::make_shared<NiceMock<MockToggleableView>>();
+  auto mockToggleable = NiceMock<MockToggleableView>();
   IToggleableView::Callback callback;
-  ON_CALL(*mockToggleable, subscribe).WillByDefault([&](IToggleableView::Callback cb) {
+  ON_CALL(mockToggleable, subscribe).WillByDefault([&](IToggleableView::Callback cb) {
     callback = cb;
   });
 
-  DriveLockController controller = DriveLockController(mockToggleable, mockHandler);
+  DriveLockController controller = DriveLockController(&mockToggleable, &mockHandler);
 
   // Trigger callback
   callback(true);
@@ -42,14 +42,14 @@ TEST(DriveLockControllerTests, whenButtonClickedInViewWriteToChar) {
 }
 
 TEST(DriveLockControllerTests, whenPropertyChangedInCharUpdateView) {
-  auto mockHandler = std::make_shared<NiceMock<MockGattCharacteristicHandler>>();
-  EXPECT_CALL(*mockHandler, read).WillOnce(Return(BytesTrue)).WillOnce(Return(BytesFalse));
+  auto mockHandler = NiceMock<MockGattCharacteristicHandler>();
+  EXPECT_CALL(mockHandler, read).WillOnce(Return(BytesTrue)).WillOnce(Return(BytesFalse));
 
-  auto mockToggleable = std::make_shared<NiceMock<MockToggleableView>>();
-  EXPECT_CALL(*mockToggleable, update(true));
-  EXPECT_CALL(*mockToggleable, update(false));
+  auto mockToggleable = NiceMock<MockToggleableView>();
+  EXPECT_CALL(mockToggleable, update(true));
+  EXPECT_CALL(mockToggleable, update(false));
 
-  DriveLockController controller = DriveLockController(mockToggleable, mockHandler);
+  DriveLockController controller = DriveLockController(&mockToggleable, &mockHandler);
 
   // Only need one update() call to verify true and false
   // because the constructor also calls update().

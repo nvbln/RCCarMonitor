@@ -2,10 +2,8 @@
 #include "interfaces/IGattCharacteristicHandler.h"
 #include "views/IToggleableView.h"
 
-#include <memory>
-
-DriveLockController::DriveLockController(std::shared_ptr<IToggleableView> toggleable,
-                                         std::shared_ptr<IGattCharacteristicHandler> handler)
+DriveLockController::DriveLockController(IToggleableView* toggleable,
+                                         IGattCharacteristicHandler* handler)
     : mToggleable(toggleable), mHandler(handler) {
   if (mHandler->isAvailable()) {
     toggleable->enable();
