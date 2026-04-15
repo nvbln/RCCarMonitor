@@ -3,8 +3,6 @@
 
 #include "GattCharacteristicHandler.h"
 
-#include <memory>
-
 GattCharacteristicHandler::GattCharacteristicHandler(IBluetoothDevice* device,
                                                      std::string characteristicId)
     : mDevice(device), mCharId(characteristicId) {
@@ -14,7 +12,7 @@ GattCharacteristicHandler::GattCharacteristicHandler(IBluetoothDevice* device,
     mChar = *result;
     onAvailableEvent.notify();
   } else {
-    device->subscribeToAddCharacteristic([&](std::shared_ptr<IGattCharacteristic> gattChar) {
+    device->subscribeToAddCharacteristic([&](IGattCharacteristic* gattChar) {
       if (gattChar->uuid() == characteristicId) {
         this->mChar = gattChar;
         onAvailableEvent.notify();
@@ -22,7 +20,7 @@ GattCharacteristicHandler::GattCharacteristicHandler(IBluetoothDevice* device,
     });
   }
 
-  device->subscribeToRemoveCharacteristic([&](std::shared_ptr<IGattCharacteristic> gattChar) {
+  device->subscribeToRemoveCharacteristic([&](IGattCharacteristic* gattChar) {
     if (mChar != nullptr && mChar->uuid() == characteristicId) {
       this->mChar = nullptr;
       onUnavailableEvent.notify();

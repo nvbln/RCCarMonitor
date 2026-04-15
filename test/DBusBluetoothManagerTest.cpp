@@ -22,9 +22,9 @@ public:
               (override));
   MOCK_METHOD(std::shared_ptr<IDBusAdapterProxy>, createAdapter, (std::string objectPath),
               (override));
-  MOCK_METHOD(std::shared_ptr<IDBusDeviceProxy>, createDevice, (std::string objectPath),
+  MOCK_METHOD(std::unique_ptr<IDBusDeviceProxy>, createDevice, (std::string objectPath),
               (override));
-  MOCK_METHOD(std::shared_ptr<IDBusPropertiesProxy>, createProperties, (std::string objectPath),
+  MOCK_METHOD(std::unique_ptr<IDBusPropertiesProxy>, createProperties, (std::string objectPath),
               (override));
   MOCK_METHOD(std::shared_ptr<IDBusCharacteristicProxy>, createCharacteristic,
               (std::string objectPath), (override));
@@ -33,17 +33,18 @@ public:
 };
 
 TEST(DBusBluetoothManagerTests, shouldGetAndFindDevices) {
-  auto mockProxy = std::make_shared<NiceMock<MockDBusObjectManagerProxy>>();
+  auto mockProxy = std::make_unique<NiceMock<MockDBusObjectManagerProxy>>();
+  auto rawMockProxy = mockProxy.get();
 
   // Save callbacks such that it can be triggered from the test.
   IDBusObjectManagerProxy::OnInterfacesAddedCallback addedCallback;
   IDBusObjectManagerProxy::OnInterfacesRemovedCallback removedCallback;
-  EXPECT_CALL(*mockProxy, addOnInterfacesAddedCallback)
+  EXPECT_CALL(*rawMockProxy, addOnInterfacesAddedCallback)
       .WillOnce(::testing::SaveArg<0>(&addedCallback));
-  EXPECT_CALL(*mockProxy, addOnInterfacesRemovedCallback)
+  EXPECT_CALL(*rawMockProxy, addOnInterfacesRemovedCallback)
       .WillOnce(::testing::SaveArg<0>(&removedCallback));
 
-  auto bluetoothManager = std::make_shared<DBusBluetoothManager>(mockProxy);
+  auto bluetoothManager = DBusBluetoothManager(std::move(mockProxy));
 
   // Create a fake device, including a fake proxy, that can give the
   // address back when requested (for finding devices).
@@ -61,19 +62,20 @@ TEST(DBusBluetoothManagerTests, shouldGetAndFindDevices) {
         {sdbus::PropertyName{"UUIDs"},
          sdbus::Variant{std::vector<std::string>{"00001800-0000-1000-8000-00805f9b34fb"}}}}}};
 
-  auto mockDeviceProxy = std::make_shared<NiceMock<MockDBusDeviceProxy>>();
-  auto mockPropertiesProxy = std::make_shared<NiceMock<MockDBusPropertiesProxy>>();
+  auto mockDeviceProxy = std::make_unique<NiceMock<MockDBusDeviceProxy>>();
+  auto mockPropertiesProxy = std::make_unique<NiceMock<MockDBusPropertiesProxy>>();
   ON_CALL(*mockDeviceProxy, address).WillByDefault(Return(fakeDeviceAddress));
   ON_CALL(*mockDeviceProxy, name).WillByDefault(Return(fakeDeviceName));
-  ON_CALL(*mockProxy, createDevice).WillByDefault(Return(mockDeviceProxy));
-  ON_CALL(*mockProxy, createProperties).WillByDefault(Return(mockPropertiesProxy));
+  ON_CALL(*rawMockProxy, createDevice).WillByDefault(Return(ByMove(std::move(mockDeviceProxy))));
+  ON_CALL(*rawMockProxy, createProperties)
+      .WillByDefault(Return(ByMove(std::move(mockPropertiesProxy))));
 
   // Test the code
   addedCallback(fakeDevicePath, fakeDeviceProperties);
-  EXPECT_EQ(1, bluetoothManager->getDevices().size());
-  EXPECT_TRUE(bluetoothManager->findDevice(fakeDeviceName));
+  EXPECT_EQ(1, bluetoothManager.getDevices().size());
+  EXPECT_TRUE(bluetoothManager.findDevice(fakeDeviceName));
   removedCallback(fakeDevicePath, std::vector{deviceInterface});
-  EXPECT_EQ(0, bluetoothManager->getDevices().size());
+  EXPECT_EQ(0, bluetoothManager.getDevices().size());
 }
 
 // TODO: Add test for the adapter

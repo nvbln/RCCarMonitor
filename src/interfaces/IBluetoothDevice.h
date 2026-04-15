@@ -2,7 +2,6 @@
 
 #include "IGattCharacteristic.h"
 #include <functional>
-#include <memory>
 #include <optional>
 #include <string>
 
@@ -19,7 +18,7 @@ public:
    * @brief Callback to get notified of changes to the GattCharacteristic.
    * @return the GattCharacteristic that is updated.
    */
-  using Callback = std::function<void(std::shared_ptr<IGattCharacteristic>)>;
+  using Callback = std::function<void(IGattCharacteristic*)>;
 
   virtual ~IBluetoothDevice() = default;
 
@@ -62,8 +61,7 @@ public:
    * @param uuid The UUID of the Characteristic that should be returned.
    * @return an optional that contains a pointer to the Characteristic if found.
    */
-  virtual std::optional<std::shared_ptr<IGattCharacteristic>>
-  findCharacteristic(std::string uuid) = 0;
+  virtual std::optional<IGattCharacteristic*> findCharacteristic(std::string uuid) = 0;
 
   /**
    * @brief subscribes to notifications of added characteristics.

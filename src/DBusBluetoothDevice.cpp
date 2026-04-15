@@ -4,28 +4,29 @@
 #include "DBusBluetoothDevice.h"
 
 void DBusBluetoothDevice::addCharacteristic(
-    std::shared_ptr<DBusGattCharacteristic> characteristic) {
-  mCharacteristics.push_back(characteristic);
+    std::unique_ptr<DBusGattCharacteristic> characteristic) {
+  mCharacteristics.push_back(std::move(characteristic));
 }
 
-void DBusBluetoothDevice::removeCharacteristic(
-    std::shared_ptr<DBusGattCharacteristic> characteristic) {
+void DBusBluetoothDevice::removeCharacteristic(DBusGattCharacteristic* characteristic) {
   mCharacteristics.erase(
-      std::remove(mCharacteristics.begin(), mCharacteristics.end(), characteristic),
+      std::remove_if(mCharacteristics.begin(), mCharacteristics.end(),
+                     [characteristic](const std::unique_ptr<DBusGattCharacteristic>& p) {
+                       return p.get() == characteristic;
+                     }),
       mCharacteristics.end());
 }
 
-std::optional<std::shared_ptr<IGattCharacteristic>>
-DBusBluetoothDevice::findCharacteristic(std::string uuid) {
+std::optional<IGattCharacteristic*> DBusBluetoothDevice::findCharacteristic(std::string uuid) {
   auto characteristic = this->findDBusCharacteristic(uuid);
   if (characteristic) {
-    return std::static_pointer_cast<IGattCharacteristic>(*characteristic);
+    return characteristic;
   }
 
   return std::nullopt;
 }
 
-std::optional<std::shared_ptr<DBusGattCharacteristic>>
+std::optional<DBusGattCharacteristic*>
 DBusBluetoothDevice::findDBusCharacteristic(std::string value, std::string property) {
   auto iterator = std::find_if(
       mCharacteristics.begin(), mCharacteristics.end(), [&](const auto& characteristic) {
@@ -42,7 +43,7 @@ DBusBluetoothDevice::findDBusCharacteristic(std::string value, std::string prope
     return std::nullopt;
   }
 
-  return *iterator;
+  return (*iterator).get();
 }
 
 void DBusBluetoothDevice::onPropertiesChanged(

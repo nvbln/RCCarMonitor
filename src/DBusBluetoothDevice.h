@@ -2,6 +2,7 @@
 
 #include <sdbus-c++/sdbus-c++.h>
 
+#include <memory>
 #include <optional>
 
 #include "DBusGattCharacteristic.h"
@@ -27,11 +28,11 @@ public:
    * @param proxy the proxy through which the device communicates with SDBus.
    * @param propertiesProxy the proxy that notifies the object of any property changes.
    */
-  DBusBluetoothDevice(std::shared_ptr<IDBusDeviceProxy> proxy,
-                      std::shared_ptr<IDBusPropertiesProxy> propertiesProxy)
-      : mProxy(proxy), mPropertiesProxy(propertiesProxy), mName(proxy->name()),
-        mAddress(proxy->address()) {
-    propertiesProxy->subscribeToOnPropertiesChanged(
+  DBusBluetoothDevice(std::unique_ptr<IDBusDeviceProxy> proxy,
+                      std::unique_ptr<IDBusPropertiesProxy> propertiesProxy)
+      : mProxy(std::move(proxy)), mPropertiesProxy(std::move(propertiesProxy)),
+        mName(mProxy->name()), mAddress(mProxy->address()) {
+    mPropertiesProxy->subscribeToOnPropertiesChanged(
         [this](const sdbus::InterfaceName& interface,
                const std::map<sdbus::MemberName, sdbus::Variant>& changedProperties,
                const std::vector<sdbus::MemberName>& invalidatedProperties) {
@@ -44,14 +45,14 @@ public:
    *
    * @param characteristic The characteristic to add to the device.
    */
-  void addCharacteristic(std::shared_ptr<DBusGattCharacteristic> characteristic);
+  void addCharacteristic(std::unique_ptr<DBusGattCharacteristic> characteristic);
 
   /**
    * @brief removes the DBus GATT Characteristic from the device.
    *
    * @param characteristic The characteristic to remove from the device.
    */
-  void removeCharacteristic(std::shared_ptr<DBusGattCharacteristic> characteristic);
+  void removeCharacteristic(DBusGattCharacteristic* characteristic);
 
   /**
    * @brief retrieves the first DBusCharacteristic with the given property, if any
@@ -59,8 +60,8 @@ public:
    * @param value The value that the sought after Characteristic has.
    * @param property The property of the value, uuid by default.
    */
-  std::optional<std::shared_ptr<DBusGattCharacteristic>>
-  findDBusCharacteristic(std::string value, std::string property = "uuid");
+  std::optional<DBusGattCharacteristic*> findDBusCharacteristic(std::string value,
+                                                                std::string property = "uuid");
 
   /**
    * @see IBluetoothDevice::connect()
@@ -90,7 +91,7 @@ public:
   /**
    * @see IBluetoothDevice::findCharacteristic()
    */
-  std::optional<std::shared_ptr<IGattCharacteristic>> findCharacteristic(std::string uuid) override;
+  std::optional<IGattCharacteristic*> findCharacteristic(std::string uuid) override;
 
   void subscribeToAddCharacteristic(Callback callback) override { addEvent.subscribe(callback); }
 
@@ -99,15 +100,15 @@ public:
   }
 
 private:
-  std::shared_ptr<IDBusDeviceProxy> mProxy;
-  std::shared_ptr<IDBusPropertiesProxy> mPropertiesProxy;
-  std::vector<std::shared_ptr<DBusGattCharacteristic>> mCharacteristics;
+  std::unique_ptr<IDBusDeviceProxy> mProxy;
+  std::unique_ptr<IDBusPropertiesProxy> mPropertiesProxy;
+  std::vector<std::unique_ptr<DBusGattCharacteristic>> mCharacteristics;
 
   std::string mName;
   std::string mAddress;
 
-  Event<Callback, std::shared_ptr<IGattCharacteristic>> addEvent;
-  Event<Callback, std::shared_ptr<IGattCharacteristic>> removeEvent;
+  Event<Callback, IGattCharacteristic*> addEvent;
+  Event<Callback, IGattCharacteristic*> removeEvent;
 
   /**
    * @brief Called when a property of the device changes.

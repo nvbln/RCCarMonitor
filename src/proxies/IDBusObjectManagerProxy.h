@@ -65,7 +65,7 @@ public:
    * @param objectPath The path of the device.
    * @return a pointer to the newly created IDBusDeviceProxy instance.
    */
-  virtual std::shared_ptr<IDBusDeviceProxy> createDevice(std::string objectPath) = 0;
+  virtual std::unique_ptr<IDBusDeviceProxy> createDevice(std::string objectPath) = 0;
 
   /**
    * @brief creates a new instance of IDBusCharacteristicProxy with the given path.
@@ -84,7 +84,7 @@ public:
    * @param objectPath The path of the object of interest.
    * @return a pointer to the newly created IDBusPropertiesProxy instance.
    */
-  virtual std::shared_ptr<IDBusPropertiesProxy> createProperties(std::string objectPath) = 0;
+  virtual std::unique_ptr<IDBusPropertiesProxy> createProperties(std::string objectPath) = 0;
 
   /**
    * @brief retrieves the objects that the ObjectManager currently holds.

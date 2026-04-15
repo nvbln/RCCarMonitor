@@ -5,8 +5,6 @@
 #include "interfaces/IGattCharacteristic.h"
 #include "interfaces/IGattCharacteristicHandler.h"
 
-#include <memory>
-
 /**
  * @class GattCharacteristicHandler
  * @brief Safely handles the GattCharacteristic in Bluetooth BLE.
@@ -56,7 +54,7 @@ public:
 
 private:
   IBluetoothDevice* mDevice;
-  std::shared_ptr<IGattCharacteristic> mChar = nullptr;
+  IGattCharacteristic* mChar = nullptr;
   std::string mCharId;
 
   Event<OnAvailableCallback> onAvailableEvent;

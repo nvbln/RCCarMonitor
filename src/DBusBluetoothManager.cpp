@@ -59,8 +59,9 @@ void DBusBluetoothManager::onInterfacesAdded(
 
       if (optDevice) {
         auto device = *optDevice;
-        device->addCharacteristic(
-            std::make_shared<DBusGattCharacteristic>(mProxy->createCharacteristic(objectPath)));
+        auto dbusChar =
+            std::make_unique<DBusGattCharacteristic>(mProxy->createCharacteristic(objectPath));
+        device->addCharacteristic(std::move(dbusChar));
       } else {
         std::cout << "Couldn't find device: " << address << std::endl;
       }

@@ -68,8 +68,8 @@ public:
   /**
    * @see IDBusObjectManagerProxy::createDevice()
    */
-  std::shared_ptr<IDBusDeviceProxy> createDevice(std::string objectPath) override {
-    return std::make_shared<DBusDeviceProxy>(mConnection, mDestination,
+  std::unique_ptr<IDBusDeviceProxy> createDevice(std::string objectPath) override {
+    return std::make_unique<DBusDeviceProxy>(mConnection, mDestination,
                                              sdbus::ObjectPath{objectPath});
   }
 
@@ -84,8 +84,8 @@ public:
   /**
    * @see IDBusObjectManagerProxy::createProperties()
    */
-  std::shared_ptr<IDBusPropertiesProxy> createProperties(std::string objectPath) override {
-    return std::make_shared<DBusPropertiesProxy>(mConnection, mDestination,
+  std::unique_ptr<IDBusPropertiesProxy> createProperties(std::string objectPath) override {
+    return std::make_unique<DBusPropertiesProxy>(mConnection, mDestination,
                                                  sdbus::ObjectPath{objectPath});
   }
 

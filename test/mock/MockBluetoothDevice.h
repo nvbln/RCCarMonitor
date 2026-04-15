@@ -10,8 +10,8 @@ public:
   MOCK_METHOD(bool, isConnected, (), (override));
   MOCK_METHOD(std::string, name, (), (const, override));
   MOCK_METHOD(std::string, address, (), (const, override));
-  MOCK_METHOD(std::optional<std::shared_ptr<IGattCharacteristic>>, findCharacteristic,
-              (std::string uuid), (override));
+  MOCK_METHOD(std::optional<IGattCharacteristic*>, findCharacteristic, (std::string uuid),
+              (override));
   MOCK_METHOD(void, subscribeToAddCharacteristic, (Callback callback), (override));
   MOCK_METHOD(void, subscribeToRemoveCharacteristic, (Callback callback), (override));
 };
