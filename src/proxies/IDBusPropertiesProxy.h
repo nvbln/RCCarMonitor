@@ -25,6 +25,8 @@ public:
                          const std::map<sdbus::MemberName, sdbus::Variant>& changedProperties,
                          const std::vector<sdbus::MemberName>& invalidatedProperties)>;
 
+  virtual ~IDBusPropertiesProxy() = default;
+
   /**
    * @brief subscribes the callback to updates on changed/invalidated properties.
    *

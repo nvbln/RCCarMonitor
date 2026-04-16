@@ -42,8 +42,7 @@ TEST(DBusBluetoothDeviceTests, shouldConnectDeviceOnDisconnect) {
 
 TEST(DBusBluetoothDeviceTests, shouldReturnCorrectBoolForIsConnected) {
   auto mockProxy = std::make_unique<NiceMock<MockDBusDeviceProxy>>();
-  EXPECT_CALL(*mockProxy, isConnected()).Times(1).WillOnce(Return(true));
-  EXPECT_CALL(*mockProxy, isConnected()).Times(1).WillOnce(Return(false));
+  EXPECT_CALL(*mockProxy, isConnected()).Times(2).WillOnce(Return(true)).WillOnce(Return(false));
 
   auto mockPropertiesProxy = std::make_unique<NiceMock<MockDBusPropertiesProxy>>();
   auto bluetoothDevice = DBusBluetoothDevice(std::move(mockProxy), std::move(mockPropertiesProxy));

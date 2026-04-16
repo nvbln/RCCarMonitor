@@ -14,6 +14,8 @@
  */
 class IDBusCharacteristicProxy {
 public:
+  virtual ~IDBusCharacteristicProxy() = default;
+
   /**
    * @brief the path to the characteristic.
    *

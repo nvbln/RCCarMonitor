@@ -10,7 +10,7 @@
  */
 class IDBusAdapterProxy {
 public:
-  ~IDBusAdapterProxy() = default;
+  virtual ~IDBusAdapterProxy() = default;
 
   /**
    * @brief Start scanning for nearby Bluetooth devices.

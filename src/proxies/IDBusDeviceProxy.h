@@ -13,6 +13,8 @@
  */
 class IDBusDeviceProxy {
 public:
+  virtual ~IDBusDeviceProxy() = default;
+
   /**
    * @brief Connect to the device.
    */

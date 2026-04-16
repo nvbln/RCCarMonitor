@@ -37,6 +37,8 @@ public:
   using OnInterfacesRemovedCallback = std::function<void(
       const sdbus::ObjectPath& objectPath, const std::vector<sdbus::InterfaceName>& interfaces)>;
 
+  virtual ~IDBusObjectManagerProxy() = default;
+
   /**
    * @brief subscribes the callback to updates on added interfaces.
    *
