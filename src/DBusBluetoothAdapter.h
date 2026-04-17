@@ -14,7 +14,7 @@
  */
 class DBusBluetoothAdapter final : public IBluetoothAdapter {
 public:
-  DBusBluetoothAdapter(std::shared_ptr<IDBusAdapterProxy> proxy) : mProxy(proxy) {}
+  DBusBluetoothAdapter(std::unique_ptr<IDBusAdapterProxy> proxy) : mProxy(std::move(proxy)) {}
 
   /**
    * @brief Start scanning for new Bluetooth devices.
@@ -31,5 +31,5 @@ public:
   void stopDiscovery() { mProxy->stopDiscovery(); }
 
 private:
-  const std::shared_ptr<IDBusAdapterProxy> mProxy;
+  const std::unique_ptr<IDBusAdapterProxy> mProxy;
 };

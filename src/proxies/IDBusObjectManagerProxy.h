@@ -59,7 +59,7 @@ public:
    * @param objectPath The path of the adapter.
    * @return a pointer to the newly created IDbusAdapterProxy instance.
    */
-  virtual std::shared_ptr<IDBusAdapterProxy> createAdapter(std::string objectPath) = 0;
+  virtual std::unique_ptr<IDBusAdapterProxy> createAdapter(std::string objectPath) = 0;
 
   /**
    * @brief creates a new instance of IDBusDeviceProxy with the given path.

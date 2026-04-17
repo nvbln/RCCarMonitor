@@ -20,7 +20,7 @@ public:
               (override));
   MOCK_METHOD(void, addOnInterfacesRemovedCallback, (const OnInterfacesRemovedCallback callback),
               (override));
-  MOCK_METHOD(std::shared_ptr<IDBusAdapterProxy>, createAdapter, (std::string objectPath),
+  MOCK_METHOD(std::unique_ptr<IDBusAdapterProxy>, createAdapter, (std::string objectPath),
               (override));
   MOCK_METHOD(std::unique_ptr<IDBusDeviceProxy>, createDevice, (std::string objectPath),
               (override));

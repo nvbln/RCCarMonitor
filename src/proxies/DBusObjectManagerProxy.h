@@ -60,8 +60,8 @@ public:
   /**
    * @see IDBusObjectManagerProxy::createAdapter()
    */
-  std::shared_ptr<IDBusAdapterProxy> createAdapter(std::string objectPath) override {
-    return std::make_shared<DBusAdapterProxy>(mConnection, mDestination,
+  std::unique_ptr<IDBusAdapterProxy> createAdapter(std::string objectPath) override {
+    return std::make_unique<DBusAdapterProxy>(mConnection, mDestination,
                                               sdbus::ObjectPath{objectPath});
   };
 
