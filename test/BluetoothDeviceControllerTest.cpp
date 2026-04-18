@@ -5,8 +5,6 @@
 
 #include "mock/MockBluetoothDevice.h"
 
-#include <memory>
-
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -26,8 +24,8 @@ class MockBluetoothManager : public IBluetoothManager {
 public:
   MOCK_METHOD(std::vector<IBluetoothAdapter*>, getAdapters, (), (const, override));
   MOCK_METHOD(std::vector<IBluetoothDevice*>, getDevices, (), (const, override));
-  MOCK_METHOD(std::optional<std::shared_ptr<IBluetoothDevice>>, findDevice,
-              (std::string deviceName), (const, override));
+  MOCK_METHOD(std::optional<IBluetoothDevice*>, findDevice, (std::string deviceName),
+              (const, override));
 };
 
 TEST(BluetoothDeviceControllerTests, whenItemSelectedInViewCallCallback) {

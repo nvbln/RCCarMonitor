@@ -7,15 +7,15 @@
 
 using InterfacesAndPropertiesMap = IDBusObjectManagerProxy::InterfacesAndPropertiesMap;
 
-DBusBluetoothManager::DBusBluetoothManager(std::shared_ptr<IDBusObjectManagerProxy> proxy)
-    : mProxy(proxy) {
-  proxy->addOnInterfacesAddedCallback(
+DBusBluetoothManager::DBusBluetoothManager(std::unique_ptr<IDBusObjectManagerProxy> proxy)
+    : mProxy(std::move(proxy)) {
+  mProxy->addOnInterfacesAddedCallback(
       [this](const sdbus::ObjectPath& objectPath,
              const InterfacesAndPropertiesMap& interfacesAndProperties) {
         this->onInterfacesAdded(objectPath, interfacesAndProperties);
       });
 
-  proxy->addOnInterfacesRemovedCallback(
+  mProxy->addOnInterfacesRemovedCallback(
       [this](const sdbus::ObjectPath& objectPath,
              const std::vector<sdbus::InterfaceName>& interfaces) {
         this->onInterfacesRemoved(objectPath, interfaces);
@@ -39,12 +39,12 @@ void DBusBluetoothManager::onInterfacesAdded(
   for (const auto& [interface, properties] : interfacesAndProperties) {
     if (interface == "org.bluez.Adapter1") {
       mAdapters.push_back(
-          std::make_shared<DBusBluetoothAdapter>(mProxy->createAdapter(objectPath)));
+          std::make_unique<DBusBluetoothAdapter>(mProxy->createAdapter(objectPath)));
     }
 
     // Filter on devices that are currently available (have a receive signal strength property)
     if (interface == "org.bluez.Device1" && properties.count(sdbus::MemberName{"RSSI"}) > 0) {
-      mDevices.push_back(std::make_shared<DBusBluetoothDevice>(
+      mDevices.push_back(std::make_unique<DBusBluetoothDevice>(
           mProxy->createDevice(objectPath), mProxy->createProperties(objectPath)));
       auto aliasProperty = properties.find(sdbus::PropertyName{"Alias"});
       if (aliasProperty != properties.end()) {
@@ -118,24 +118,28 @@ DBusBluetoothManager::extractDeviceAddressFromObjectPath(const sdbus::ObjectPath
 }
 
 std::vector<IBluetoothAdapter*> DBusBluetoothManager::getAdapters() const {
-  return castVector<IBluetoothAdapter, DBusBluetoothAdapter>(mAdapters);
+  std::vector<IBluetoothAdapter*> result;
+  result.reserve(mAdapters.size());
+  for (auto& ptr : mAdapters) {
+    result.push_back(ptr.get());
+  }
+  return result;
 }
 
 std::vector<IBluetoothDevice*> DBusBluetoothManager::getDevices() const {
-  return castVector<IBluetoothDevice, DBusBluetoothDevice>(mDevices);
-}
-
-std::optional<std::shared_ptr<IBluetoothDevice>>
-DBusBluetoothManager::findDevice(std::string deviceName) const {
-  auto device = this->findDBusDevice(deviceName);
-  if (device) {
-    return std::static_pointer_cast<IBluetoothDevice>(*device);
+  std::vector<IBluetoothDevice*> result;
+  result.reserve(mDevices.size());
+  for (auto& ptr : mDevices) {
+    result.push_back(ptr.get());
   }
-
-  return std::nullopt;
+  return result;
 }
 
-std::optional<std::shared_ptr<DBusBluetoothDevice>>
+std::optional<IBluetoothDevice*> DBusBluetoothManager::findDevice(std::string deviceName) const {
+  return this->findDBusDevice(deviceName);
+}
+
+std::optional<DBusBluetoothDevice*>
 DBusBluetoothManager::findDBusDevice(std::string value, std::string property) const {
   auto iterator = std::find_if(mDevices.begin(), mDevices.end(), [&](const auto& device) {
     std::string deviceValue;
@@ -152,9 +156,13 @@ DBusBluetoothManager::findDBusDevice(std::string value, std::string property) co
     return std::nullopt;
   }
 
-  return *iterator;
+  return (*iterator).get();
 }
 
-void DBusBluetoothManager::removeDevice(std::shared_ptr<DBusBluetoothDevice> device) {
-  mDevices.erase(std::remove(mDevices.begin(), mDevices.end(), device), mDevices.end());
+void DBusBluetoothManager::removeDevice(DBusBluetoothDevice* device) {
+  mDevices.erase(std::remove_if(mDevices.begin(), mDevices.end(),
+                                [device](const std::unique_ptr<DBusBluetoothDevice>& p) {
+                                  return p.get() == device;
+                                }),
+                 mDevices.end());
 }

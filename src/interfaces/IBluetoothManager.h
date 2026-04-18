@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <optional>
 #include <vector>
 
@@ -47,6 +46,5 @@ public:
    * @param The name of the device that should be returned.
    * @return an optional that contains a pointer to the device if found.
    */
-  virtual std::optional<std::shared_ptr<IBluetoothDevice>>
-  findDevice(std::string deviceName) const = 0;
+  virtual std::optional<IBluetoothDevice*> findDevice(std::string deviceName) const = 0;
 };

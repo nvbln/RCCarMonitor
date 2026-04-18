@@ -34,8 +34,8 @@ int main() {
   std::unique_ptr<IBluetoothManager> bluetoothManager;
   try {
     auto proxy =
-        std::make_shared<DBusObjectManagerProxy>(*connection, destination, std::move(objectPath));
-    bluetoothManager = std::make_unique<DBusBluetoothManager>(proxy);
+        std::make_unique<DBusObjectManagerProxy>(*connection, destination, std::move(objectPath));
+    bluetoothManager = std::make_unique<DBusBluetoothManager>(std::move(proxy));
   } catch (const sdbus::Error& e) {
     std::cerr << "Call failed: " << e.getName() << " - " << e.getMessage() << std::endl;
     return 1;

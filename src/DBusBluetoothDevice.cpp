@@ -18,12 +18,7 @@ void DBusBluetoothDevice::removeCharacteristic(DBusGattCharacteristic* character
 }
 
 std::optional<IGattCharacteristic*> DBusBluetoothDevice::findCharacteristic(std::string uuid) {
-  auto characteristic = this->findDBusCharacteristic(uuid);
-  if (characteristic) {
-    return characteristic;
-  }
-
-  return std::nullopt;
+  return this->findDBusCharacteristic(uuid);
 }
 
 std::optional<DBusGattCharacteristic*>
