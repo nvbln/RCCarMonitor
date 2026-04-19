@@ -21,7 +21,8 @@ public:
    *
    * @param proxy the proxy through which the characteristic communicates with SDBus.
    */
-  DBusGattCharacteristic(std::shared_ptr<IDBusCharacteristicProxy> proxy) : mProxy(proxy) {}
+  DBusGattCharacteristic(std::unique_ptr<IDBusCharacteristicProxy> proxy)
+      : mProxy(std::move(proxy)) {}
 
   /**
    * @brief returns the complete path to the Characteristic.
@@ -46,5 +47,5 @@ public:
   void write(const std::vector<uint8_t>& value) override { return mProxy->write(value); }
 
 private:
-  std::shared_ptr<IDBusCharacteristicProxy> mProxy;
+  std::unique_ptr<IDBusCharacteristicProxy> mProxy;
 };

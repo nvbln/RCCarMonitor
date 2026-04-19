@@ -76,8 +76,8 @@ public:
   /**
    * @see IDBusObjectManagerProxy::createCharacteristic()
    */
-  std::shared_ptr<IDBusCharacteristicProxy> createCharacteristic(std::string objectPath) override {
-    return std::make_shared<DBusCharacteristicProxy>(mConnection, mDestination,
+  std::unique_ptr<IDBusCharacteristicProxy> createCharacteristic(std::string objectPath) override {
+    return std::make_unique<DBusCharacteristicProxy>(mConnection, mDestination,
                                                      sdbus::ObjectPath{objectPath});
   }
 

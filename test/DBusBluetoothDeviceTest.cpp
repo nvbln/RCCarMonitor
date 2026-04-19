@@ -94,17 +94,20 @@ TEST(DBusBluetoothDeviceTests, shouldFindCharacteristic) {
   auto mockPropertiesProxy = std::make_unique<NiceMock<MockDBusPropertiesProxy>>();
   auto bluetoothDevice = DBusBluetoothDevice(std::move(mockProxy), std::move(mockPropertiesProxy));
 
-  auto mockCharacteristicProxy1 = std::make_shared<NiceMock<MockDBusCharacteristicProxy>>();
-  auto mockCharacteristicProxy2 = std::make_shared<NiceMock<MockDBusCharacteristicProxy>>();
-  auto mockCharacteristicProxy3 = std::make_shared<NiceMock<MockDBusCharacteristicProxy>>();
+  auto mockCharacteristicProxy1 = std::make_unique<NiceMock<MockDBusCharacteristicProxy>>();
+  auto mockCharacteristicProxy2 = std::make_unique<NiceMock<MockDBusCharacteristicProxy>>();
+  auto mockCharacteristicProxy3 = std::make_unique<NiceMock<MockDBusCharacteristicProxy>>();
 
   ON_CALL(*mockCharacteristicProxy1, uuid()).WillByDefault(Return("1"));
   ON_CALL(*mockCharacteristicProxy2, uuid()).WillByDefault(Return("2"));
   ON_CALL(*mockCharacteristicProxy3, uuid()).WillByDefault(Return("3"));
 
-  auto characteristic1 = std::make_unique<DBusGattCharacteristic>(mockCharacteristicProxy1);
-  auto characteristic2 = std::make_unique<DBusGattCharacteristic>(mockCharacteristicProxy2);
-  auto characteristic3 = std::make_unique<DBusGattCharacteristic>(mockCharacteristicProxy3);
+  auto characteristic1 =
+      std::make_unique<DBusGattCharacteristic>(std::move(mockCharacteristicProxy1));
+  auto characteristic2 =
+      std::make_unique<DBusGattCharacteristic>(std::move(mockCharacteristicProxy2));
+  auto characteristic3 =
+      std::make_unique<DBusGattCharacteristic>(std::move(mockCharacteristicProxy3));
 
   auto rawChar2 = characteristic2.get();
 

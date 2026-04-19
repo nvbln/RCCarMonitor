@@ -75,7 +75,7 @@ public:
    * @param objectPath The path of the characteristic.
    * @return a pointer to the newly created IDBusCharacteristicProxy instance.
    */
-  virtual std::shared_ptr<IDBusCharacteristicProxy>
+  virtual std::unique_ptr<IDBusCharacteristicProxy>
   createCharacteristic(std::string objectPath) = 0;
 
   /**

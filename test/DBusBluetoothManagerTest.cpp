@@ -26,7 +26,7 @@ public:
               (override));
   MOCK_METHOD(std::unique_ptr<IDBusPropertiesProxy>, createProperties, (std::string objectPath),
               (override));
-  MOCK_METHOD(std::shared_ptr<IDBusCharacteristicProxy>, createCharacteristic,
+  MOCK_METHOD(std::unique_ptr<IDBusCharacteristicProxy>, createCharacteristic,
               (std::string objectPath), (override));
   MOCK_METHOD((std::map<sdbus::ObjectPath, InterfacesAndPropertiesMap>), managedObjects, (),
               (override));
